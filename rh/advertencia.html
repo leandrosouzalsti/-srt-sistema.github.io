@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Aplicar Advertência</title>
+    <meta name="description" content="Formulário para aplicação e controle de advertências internas.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: var(--primary-color);">
+            <h1 style="display:none;">Aplicar Advertência</h1>
+            <h2 style="color: var(--primary-color);">Aplicar Advertência</h2>
+            
+            <form id="formAdvertencia" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="motivoAdv">➔ MOTIVO:</label>
+                    <input type="text" id="motivoAdv" placeholder="Ex: Ausente na baia" required>
+                </div>
+                <div class="form-group">
+                    <label for="consequenciaAdv">➔ CONSEQUÊNCIA / VALOR DA MULTA:</label>
+                    <input type="text" id="consequenciaAdv" placeholder="Ex: 5.000.000" required>
+                </div>
+                <div class="form-group">
+                    <label for="mecanicoAdv">➔ MECÂNICO (A):</label>
+                    <input type="text" id="mecanicoAdv" placeholder="Ex: Gabriel Silva" required>
+                </div>
+                <div class="form-group">
+                    <label for="passaporteAdv">➔ PASSAPORTE (ID):</label>
+                    <input type="text" id="passaporteAdv" placeholder="Ex: 11111" required>
+                </div>
+                <div class="form-group">
+                    <label for="numAdv">➔ N° DA ADVERTÊNCIA:</label>
+                    <input type="text" id="numAdv" placeholder="Ex: 1" required>
+                </div>
+                <div class="form-group">
+                    <label for="responsavelAdv">➔ RESPONSÁVEL APLICADOR:</label>
+                    <input type="text" id="responsavelAdv" placeholder="Ex: @leandrosouzalsti" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--primary-color);" id="btn-submit-adv">Aplicar Advertência (Pendente)</button>
+            </form>
+            
+            <section id="bloco-adv-pendentes" class="container-adv-pendentes" style="display: none;">
+                <h3>📋 Advertências Aguardando Pagamento</h3>
+                <div id="lista-adv-dinamica"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formAdvertencia').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const novaAdv = {
+                idUnico: Date.now(),
+                motivo: document.getElementById('motivoAdv').value.trim(),
+                consequencia: document.getElementById('consequenciaAdv').value.trim(),
+                mecanico: document.getElementById('mecanicoAdv').value.trim(),
+                passaporte: document.getElementById('passaporteAdv').value.trim(),
+                numAdv: document.getElementById('numAdv').value.trim(),
+                responsavel: document.getElementById('responsavelAdv').value.trim()
+            };
+
+            const texto = `—————| ⚠️ **ADVERTÊNCIA APLICADA** |—————\n\n➔ **MOTIVO:** ${novaAdv.motivo}\n➔ **CONSEQUÊNCIA / MULTA:** ${novaAdv.consequencia}\n➔ **SITUAÇÃO:** Aguardando pagamento no painel.\n➔ **MECÂNICO (A):** ${novaAdv.mecanico}\n➔ **PASSAPORTE (ID):** ${novaAdv.passaporte}\n➔ **N° DA ADVERTÊNCIA:** ${novaAdv.numAdv}\n➔ **RESPONSÁVEL:** ${novaAdv.responsavel}\n\n➔ **PRAZO (24h) PARA EFETUAR O PAGAMENTO EM COBRANÇAS DA ADVERTÊNCIA**\n\n——————————————————`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", Config.webhookAplicarAdv, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        showToast(`Advertência contra o ID ${novaAdv.passaporte} criada! Dê baixa na lista abaixo.`, 'success');
+                        adicionarAdvertencia(novaAdv);
+                        form.reset();
+                    } else {
+                        showToast('Erro ao criar advertência. Código: ' + xhr.status, 'error');
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ content: texto }));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Recrutamento Não Iniciante</title>
+    <meta name="description" content="Formulário de cadastro para novos recrutas experientes.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 500px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao Menu de Recrutamento</a>
+        
+        <div class="form-container">
+            <h1 style="display:none;">Recrutamento Não Iniciante</h1>
+            <h2>Recrutamento Não Iniciante</h2>
+            
+            <form id="recNaoInicianteForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="naoIniNome">➔ NOME COMPLETO:</label>
+                    <input type="text" id="naoIniNome" placeholder="Ex: Carlos Souza" required>
+                </div>
+                <div class="form-group">
+                    <label for="naoIniId">➔ ID / PASSAPORTE:</label>
+                    <input type="text" id="naoIniId" placeholder="Ex: 9876" required>
+                </div>
+                <div class="form-group">
+                    <label for="naoIniTel">➔ TELEFONE:</label>
+                    <input type="text" id="naoIniTel" placeholder="Ex: 555-9981" required>
+                </div>
+                <div class="form-group">
+                    <label for="naoIniRecrutador">➔ RECRUTADOR (A):</label>
+                    <input type="text" id="naoIniRecrutador" placeholder="Ex: @leandrosouzalsti" required>
+                </div>
+                <div class="form-group">
+                    <label for="naoIniData">➔ DATA:</label>
+                    <input type="date" id="naoIniData" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-submit-naoiniciante">Postar Recrutamento Não Iniciante</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('recNaoInicianteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('naoIniData').value.split('-').reverse().join('/');
+            const msg = `—————| ⚡ **RECRUTAMENTO NÃO INICIANTE** |—————\n➔ **NOME COMPLETO:** ${document.getElementById('naoIniNome').value}\n➔ **ID / PASSAPORTE:** ${document.getElementById('naoIniId').value}\n➔ **TELEFONE:** ${document.getElementById('naoIniTel').value}\n➔ **RECRUTADOR (A):** ${document.getElementById('naoIniRecrutador').value}\n➔ **DATA:** ${dataFmt}\n—————————————————————————`;
+            dispararWebhook(Config.webhookRecrutamentos, { content: msg }, "Recrutamento Não Iniciante Postado!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Setor de Cursos</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="../index.html" class="btn-voltar" style="text-decoration: none;">⬅️ Menu Principal</a>
+        
+        <div class="form-container" style="border-color: #f1c40f;">
+            <h2 style="color: #f1c40f;">Setor de Cursos</h2>
+            
+            <!-- STEP 1: SOLICITAÇÃO -->
+            <form id="cursosForm" onsubmit="event.preventDefault();">
+                
+                <!-- SELEÇÃO DO FUNCIONÁRIO CADASTRADO -->
+                <div class="form-group">
+                    <label for="selecaoAluno">👤 SELECIONE O ALUNO (CURSANDO):</label>
+                    <select id="selecaoAluno" required>
+                        <option value="">-- Selecione um Membro Cadastrado --</option>
+                    </select>
+                    <small style="color: var(--text-muted); display:block; margin-top:5px;">
+                        Não achou o aluno? <a href="cadastro.html" style="color:#f1c40f; text-decoration:underline;">Clique aqui para cadastrá-lo</a>.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargoAlunoCur">🎓 CARGO ATUAL DO ALUNO:</label>
+                    <select id="cargoAlunoCur" required>
+                        <option value="Aprendiz">Aprendiz</option>
+                        <option value="Mecanico">Mecanico</option>
+                        <option value="Recrutador">Recrutador</option>
+                        <option value="Sub Gerente">Sub Gerente</option>
+                        <option value="Gerente">Gerente</option>
+                        <option value="Gerente Geral">Gerente Geral</option>
+                        <option value="Chefe 02">Chefe 02</option>
+                        <option value="Chefe 01">Chefe 01</option>
+                        <option value="Dono 00">Dono 00</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>📖 CURSOS DESEJADOS:</label>
+                    <div id="lista-cursos-container"></div>
+                    <button type="button" onclick="adicionarNovoCursoField()" style="margin-top: 12px; background-color: var(--success-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px;">➕ Adicionar Outro Curso</button>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: #f1c40f; color: #000;">Passo 1: Enviar Solicitação</button>
+            </form>
+
+            <!-- STEP 2: PAGAMENTO -->
+            <div id="area-pendencia-pagamento" class="bloco-etapa-curso" style="display: none; border-color: var(--info-color);">
+                <h3 style="color: var(--info-color); margin-top: 0;">💰 Passo 2: Pendência de Pagamento</h3>
+                <div id="dados-da-pendencia" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--info-color); line-height: 1.5;"></div>
+                <form id="formConfirmarPagamento" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="selecaoAplicador">👨‍🏫 SELECIONE O APLICADOR/INSTRUTOR:</label>
+                        <select id="selecaoAplicador" required>
+                            <option value="">-- Selecione o Instrutor Responsável --</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit" style="background-color: var(--info-color);">Confirmar Pagamento Recebido</button>
+                </form>
+            </div>
+
+            <!-- STEP 3: HOMOLOGAÇÃO -->
+            <div id="area-aprovacao-curso" class="bloco-etapa-curso" style="display: none; border-color: var(--success-color);">
+                <h3 style="color: var(--success-color); margin-top: 0;">🥇 Passo 3: Homologação do Curso</h3>
+                <div id="dados-da-aprovacao" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--success-color); line-height: 1.5;"></div>
+                <form id="formConfirmarAprovacao" onsubmit="event.preventDefault();">
+                    <p style="font-size: 14px; text-align: center; color: var(--text-muted); margin-bottom: 20px;">O aluno realizou o teste prático e foi aprovado com sucesso?</p>
+                    <button type="submit" class="btn-submit" style="background-color: var(--success-color);">Aprovar e Enviar Homologação</button>
+                </form>
+            </div>
+
+            <!-- STEP 4: CERTIFICADO -->
+            <div id="area-gerar-certificado" class="bloco-etapa-curso" style="display: none; border-color: var(--purple-color);">
+                <h3 style="color: var(--purple-color); margin-top: 0;">📜 Passo 4: Conclusão e Certificado</h3>
+                <form id="formGerarCertificado" onsubmit="event.preventDefault();">
+                    <button type="submit" class="btn-submit" style="background-color: var(--purple-color);">Gerar e Enviar Certificado(s)</button>
+                </form>
+                <canvas id="canvasCertificado" width="800" height="500" style="display: none; width: 100%; border-radius: 8px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        const tabelaValores = { 
+            "@CURSO DE GUINCHO [🚛]": 1.5, 
+            "@CURSO DE CAMINHÃO [🚛]": 2.0, 
+            "@CURSO DE VENDAS [📚]": 4.0, 
+            "@CURSO DE HELICÓPTERO [🚁]": 8.0, 
+            "@INSTRUTOR [📚]": 10.0 
+        };
+        const opcoesCursos = Object.keys(tabelaValores);
+        let dadosSessaoCurso = null;
+        let listaMembrosGlobais = [];
+
+        // Carrega os membros salvos nos selects do formulário
+        function carregarMembrosNosSelects() {
+            listaMembrosGlobais = JSON.parse(localStorage.getItem('srt_membros')) || [];
+            const selectAluno = document.getElementById('selecaoAluno');
+            const selectAplicador = document.getElementById('selecaoAplicador');
+            
+            listaMembrosGlobais.forEach(m => {
+                const opt1 = document.createElement('option');
+                opt1.value = m.idJogo;
+                opt1.textContent = `${m.nome} (ID: ${m.idJogo})`;
+                selectAluno.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = m.idJogo;
+                opt2.textContent = `${m.nome} (ID: ${m.idJogo})`;
+                selectAplicador.appendChild(opt2);
+            });
+        }
+
+        function obterSiglaCargo(cargo) {
+            const c = cargo.toLowerCase().trim();
+            if (c.includes("aprendiz")) return "@APZ";
+            if (c.includes("mecanico")) return "@MEC";
+            if (c.includes("recrutador")) return "@REC";
+            if (c.includes("sub gerente")) return "@SUB.G";
+            if (c.includes("gerente geral")) return "@G.G";
+            if (c.includes("gerente")) return "@G";
+            if (c.includes("chefe 02")) return "@CHEFE.02";
+            if (c.includes("chefe 01")) return "@CHEFE.01";
+            if (c.includes("dono")) return "@DONO";
+            return "";
+        }
+
+        function inicializarPrimeiroCurso() {
+            const container = document.getElementById('lista-cursos-container'); 
+            container.innerHTML = "";
+            const primeiraLinha = document.createElement('div'); 
+            primeiraLinha.className = 'curso-linha';
+            let selectHTML = `<select class="select-curso" required>`;
+            opcoesCursos.forEach(opt => { selectHTML += `<option value="${opt}">${opt}</option>`; });
+            selectHTML += `</select>`; 
+            primeiraLinha.innerHTML = selectHTML; 
+            container.appendChild(primeiraLinha);
+        }
+
+        function adicionarNovoCursoField() {
+            const container = document.getElementById('lista-cursos-container'); 
+            const selectsAtuais = document.getElementsByClassName('select-curso');
+            const cursosEscolhidos = []; 
+            for(let i = 0; i < selectsAtuais.length; i++) { cursosEscolhidos.push(selectsAtuais[i].value); }
+            const cursosDisponiveis = opcoesCursos.filter(curso => !cursosEscolhidos.includes(curso));
+            if (cursosDisponiveis.length === 0) return;
+            
+            const novaLinha = document.createElement('div'); 
+            novaLinha.className = 'curso-linha';
+            let selectHTML = `<select class="select-curso" required>`;
+            cursosDisponiveis.forEach(opt => { selectHTML += `<option value="${opt}">${opt}</option>`; });
+            selectHTML += `</select><button type="button" class="btn-remover" onclick="this.parentElement.remove();">❌</button>`;
+            novaLinha.innerHTML = selectHTML; 
+            container.appendChild(novaLinha);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            carregarMembrosNosSelects();
+            inicializarPrimeiroCurso();
+        });
+
+        // STEP 1 SUBMIT
+        document.getElementById('cursosForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const idJogoSelecionado = document.getElementById('selecaoAluno').value;
+            const alunoObjeto = listaMembrosGlobais.find(m => m.idJogo === idJogoSelecionado);
+            
+            if(!alunoObjeto) return;
+
+            const tagCargo = document.getElementById('cargoAlunoCur').value; 
+            const selects = document.getElementsByClassName('select-curso'); 
+            let listaCursosFormatada = ""; 
+            let listaCursosArray = []; 
+            let somaTotalRepasse = 0;
+            
+            for (let i = 0; i < selects.length; i++) {
+                let cursoSelecionado = selects[i].value; 
+                listaCursosFormatada += `• ${cursoSelecionado}\n`; 
+                listaCursosArray.push(cursoSelecionado);
+                if(tabelaValores[cursoSelecionado]) somaTotalRepasse += tabelaValores[cursoSelecionado];
+            }
+            const dataFicha = new Date().toLocaleDateString('pt-BR');
+            
+            // Monta o texto puro perfeitamente como você queria
+            const siglaAtual = obterSiglaCargo(tagCargo);
+            const mascaraTextoCompleta = `${siglaAtual} | ${alunoObjeto.nome} ${alunoObjeto.idJogo}`;
+            
+            // O segredo: Grudamos a menção real por ID logo após o texto, ficando tudo clicável
+            const mencaoClicavelMembro = `<@${alunoObjeto.idDiscord}>`;
+
+            const dadosSolicitacao = { 
+                embeds: [{ 
+                    title: "🎓 Nova Solicitação de Cursos", 
+                    color: 15158332, 
+                    fields: [
+                        { name: "👤 Nome do Cursando", value: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, inline: false }, 
+                        { name: "🆔 ID Passaporte", value: `${alunoObjeto.idJogo}`, inline: true }, 
+                        { name: "📅 Data de Envio", value: `${dataFicha}`, inline: true }, 
+                        { name: "📖 Cursos Solicitados", value: `${listaCursosFormatada}`, inline: false }
+                    ], 
+                    timestamp: new Date().toISOString() 
+                }] 
+            };
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", Config.webhookSolicitarCursos, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                    dadosSessaoCurso = { 
+                        id: alunoObjeto.idJogo, 
+                        nomeCru: alunoObjeto.nome, 
+                        data: dataFicha, 
+                        cursosTexto: listaCursosFormatada, 
+                        cursosLista: listaCursosArray, 
+                        nomeCompleto: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, 
+                        valorTotalRepasse: `${somaTotalRepasse}kk`, 
+                        aplicador: "" 
+                    }; 
+                    
+                    document.getElementById('dados-da-pendencia').innerHTML = `<strong>🆔 ID Jogo:</strong> ${dadosSessaoCurso.id}<br><strong>📅 Data:</strong> ${dadosSessaoCurso.data}<br><strong>📖 Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}<hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;"><strong>💰 REPASSE:</strong> <span class="destaque-valor">${dadosSessaoCurso.valorTotalRepasse}</span>`; 
+                    document.getElementById('cursosForm').style.display = 'none'; 
+                    document.getElementById('area-pendencia-pagamento').style.display = 'block'; 
+                }
+            };
+            xhr.send(JSON.stringify(dadosSolicitacao));
+        });
+
+        // STEP 2 SUBMIT
+        document.getElementById('formConfirmarPagamento').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            if(!dadosSessaoCurso) return; 
+            
+            const idAplicadorSelecionado = document.getElementById('selecaoAplicador').value;
+            const aplicadorObjeto = listaMembrosGlobais.find(m => m.idJogo === idAplicadorSelecionado);
+            
+            if(!aplicadorObjeto) return;
+            
+            // Cria o link do perfil do aplicador também para controle
+            dadosSessaoCurso.aplicador = `<@${aplicadorObjeto.idDiscord}>`;
+            
+            const dadosPagamento = { 
+                embeds: [{ 
+                    title: "💰 Confirmação de Pagamento de Curso", 
+                    description: "✅ **PAGAMENTO CONFIRMADO**", 
+                    color: 3066993, 
+                    fields: [
+                        { name: "👤 Aluno", value: `${dadosSessaoCurso.nomeCompleto}`, inline: false }, 
+                        { name: "👨‍🏫 Aplicador", value: `${dadosSessaoCurso.aplicador}`, inline: true }, 
+                        { name: "💰 Total Repassado", value: `**${dadosSessaoCurso.valorTotalRepasse}**`, inline: true }, 
+                        { name: "📖 Cursos", value: `${dadosSessaoCurso.cursosTexto}`, inline: false }
+                    ], 
+                    timestamp: new Date().toISOString() 
+                }] 
+            };
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", Config.webhookPagamentoCursos, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                    document.getElementById('dados-da-aprovacao').innerHTML = `<strong>Nome:</strong> ${dadosSessaoCurso.nomeCompleto}<br><strong>Aplicador:</strong> ${dadosSessaoCurso.aplicador}<br><strong>Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}`; 
+                    document.getElementById('area-pendencia-pagamento').style.display = 'none'; 
+                    document.getElementById('area-aprovacao-curso').style.display = 'block'; 
+                }
+            };
+            xhr.send(JSON.stringify(dadosPagamento));
+        });
+
+        // STEP 3 SUBMIT
+        document.getElementById('formConfirmarAprovacao').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            if(!dadosSessaoCurso) return;
+            
+            const dadosAprovacao = { 
+                embeds: [{ 
+                    title: "🥇 Nova Aprovação de Curso Registrada", 
+                    color: 15158332, 
+                    fields: [
+                        { name: "👤 Nome", value: `${dadosSessaoCurso.nomeCompleto}`, inline: false }, 
+                        { name: "👨‍🏫 Aplicador", value: `${dadosSessaoCurso.aplicador}`, inline: false }, 
+                        { name: "📚 Cursos Concluídos", value: `${dadosSessaoCurso.cursosTexto}`, inline: false }
+                    ], 
+                    timestamp: new Date().toISOString() 
+                }] 
+            };
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", Config.webhookAprovacaoCursos, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                    document.getElementById('area-aprovacao-curso').style.display = 'none'; 
+                    document.getElementById('area-gerar-certificado').style.display = 'block'; 
+                }
+            };
+            xhr.send(JSON.stringify(dadosAprovacao));
+        });
+
+        // STEP 4 SUBMIT (CANVAS CERTIFICADOS)
+        document.getElementById('formGerarCertificado').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            if(!dadosSessaoCurso) return; 
+            const canvas = document.getElementById('canvasCertificado'); 
+            const ctx = canvas.getContext('2d'); 
+            let index = 0;
+
+            function enviarProximoCertificado() {
+                if (index >= dadosSessaoCurso.cursosLista.length) {
+                    alert('Todos os certificados foram enviados!');
+                    window.location.href = "../index.html";
+                    return;
+                }
+
+                let cursoNome = dadosSessaoCurso.cursosLista[index];
+
+                // Render Básico Canvas Certificado
+                ctx.fillStyle = '#0f0f0f'; ctx.fillRect(0, 0, canvas.width, canvas.height); 
+                ctx.lineWidth = 8; ctx.strokeStyle = '#e74c3c'; ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40); 
+                ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff'; ctx.font = 'bold 26px Arial'; 
+                ctx.fillText(`CERTIFICADO: ${cursoNome}`, canvas.width / 2, 200); 
+                ctx.fillText(`${dadosSessaoCurso.nomeCru} (ID: ${dadosSessaoCurso.id})`, canvas.width / 2, 280); 
+                
+                const dataUrl = canvas.toDataURL('image/png'); 
+                const blob = dataURLtoBlob(dataUrl); 
+                const formData = new FormData(); 
+                formData.append('file', blob, `Certificado.png`); 
+                formData.append('payload_json', JSON.stringify({ content: `📜 Certificado Enviado! Aluno: ${dadosSessaoCurso.nomeCompleto}` })); 
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", Config.webhookCertificadosCursos, true);
+                xhr.onreadystatechange = function() { if (xhr.readyState === 4) { index++; enviarProximoCertificado(); } };
+                xhr.send(formData);
+            }
+            enviarProximoCertificado();
+        });
+
+        function dataURLtoBlob(dataurl) { 
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n); 
+            while(n--){ u8arr[n] = bstr.charCodeAt(n); } return new Blob([u8arr], {type:mime}); 
+        }
+    </script>
+</body>
+</html>

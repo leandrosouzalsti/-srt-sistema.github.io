@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel SRT Motors - Sistema Interno</title>
+    <meta name="description" content="Sistema interno de gerenciamento para a SRT Motors no Cidade Nobre RP.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="hub-principal" class="hub-container">
+        <h1 class="hub-title" id="main-title">SRT Motors</h1>
+        <div class="hub-subtitle" id="main-subtitle">Cidade Nobre RP — Sistema Interno</div>
+
+        <main class="grid-categorias">
+            <a href="javascript:void(0)" style="text-decoration: none;" id="link-recrutamento" class="link-disabled">
+                <div class="card-categoria disabled" id="card-recrutamento">
+                    <div class="icon">⚔️</div>
+                    <div class="title">Recrutamento</div>
+                </div>
+            </a>
+
+            <a href="cursos/index.html" style="text-decoration: none;" id="link-cursos">
+                <div class="card-categoria" id="card-cursos">
+                    <div class="icon">📚</div>
+                    <div class="title">Setor de Cursos</div>
+                </div>
+            </a>
+
+            <a href="javascript:void(0)" style="text-decoration: none;" id="link-rh" class="link-disabled">
+                <div class="card-categoria disabled" id="card-rh">
+                    <div class="icon">👥</div>
+                    <div class="title">Setor de RH</div>
+                </div>
+            </a>
+
+            <a href="javascript:void(0)" style="text-decoration: none;" id="link-admin">
+                <div class="card-categoria" id="card-admin" style="border-color: var(--purple-color);">
+                    <div class="icon">🔒</div>
+                    <div class="title">Área Administrativa</div>
+                </div>
+            </a>
+        </main>
+    </div>
+
+    <!-- Modal de Acesso Administrativo -->
+    <div id="modalAdmin" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">🔒 Acesso Restrito</div>
+            <div class="modal-body">
+                Insira a chave de segurança para acessar o Painel Administrativo.
+            </div>
+            <div class="modal-input-container">
+                <input type="password" id="adminPasscode" class="modal-input" placeholder="••••••••" maxlength="15">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-modal btn-modal-cancel" id="btnCancelAdmin">Cancelar</button>
+                <button type="button" class="btn-modal btn-modal-confirm" id="btnConfirmAdmin">Acessar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const linkAdmin = document.getElementById('link-admin');
+        const modalAdmin = document.getElementById('modalAdmin');
+        const passcodeInput = document.getElementById('adminPasscode');
+        const btnCancel = document.getElementById('btnCancelAdmin');
+        const btnConfirm = document.getElementById('btnConfirmAdmin');
+
+        linkAdmin.addEventListener('click', () => {
+            modalAdmin.classList.add('active');
+            passcodeInput.value = '';
+            setTimeout(() => passcodeInput.focus(), 100);
+        });
+
+        function fecharModal() {
+            modalAdmin.classList.remove('active');
+        }
+
+        btnCancel.addEventListener('click', fecharModal);
+
+        modalAdmin.addEventListener('click', (e) => {
+            if (e.target === modalAdmin) {
+                fecharModal();
+            }
+        });
+
+        function tentarAcesso() {
+            const senha = passcodeInput.value;
+            if (senha === '258963147') {
+                sessionStorage.setItem('admin_unlocked', 'true');
+                showToast('Acesso autorizado! Redirecionando...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin/index.html';
+                }, 1000);
+            } else {
+                showToast('Chave de acesso inválida!', 'error');
+                passcodeInput.value = '';
+                passcodeInput.focus();
+            }
+        }
+
+        btnConfirm.addEventListener('click', tentarAcesso);
+        passcodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                tentarAcesso();
+            }
+        });
+    </script>
+</body>
+
+</html>

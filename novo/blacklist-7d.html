@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Blacklist 7 Dias</title>
+    <meta name="description" content="Formulário para demissão com inclusão temporária na blacklist por 7 dias.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: var(--secondary-color);">
+            <h1 style="display:none;">Demissão com Blacklist (7 Dias)</h1>
+            <h2 style="color: var(--secondary-color);">Demissão com Blacklist (7 Dias)</h2>
+            
+            <form id="formBl7" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="bl7Nome">➔ NOME DO EX-MECÂNICO:</label>
+                    <input type="text" id="bl7Nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="bl7Id">➔ ID DO EX-MECÂNICO:</label>
+                    <input type="text" id="bl7Id" required>
+                </div>
+                <div class="form-group">
+                    <label for="bl7Motivo">➔ MOTIVO DA BLACKLIST:</label>
+                    <input type="text" id="bl7Motivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="bl7Data">➔ DATA DA EXPULSÃO:</label>
+                    <input type="date" id="bl7Data" required>
+                </div>
+                <div class="form-group">
+                    <label for="bl7Liberacao">➔ LIBERADO A PARTIR DE:</label>
+                    <input type="text" id="bl7Liberacao" placeholder="Ex: DD/MM/AAAA" required>
+                </div>
+                <div class="form-group">
+                    <label for="bl7Responsavel">➔ RESPONSÁVEL:</label>
+                    <input type="text" id="bl7Responsavel" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--secondary-color);" id="btn-submit-bl7">Postar Blacklist 7D</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formBl7').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('bl7Data').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n⏳ **DEMISSÃO COM BLACKLIST (7 DIAS)**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO EX-MECÂNICO:** ${document.getElementById('bl7Nome').value}\n➔ **ID DO EX-MECÂNICO:** ${document.getElementById('bl7Id').value}\n➔ **MOTIVO DA BLACKLIST:** ${document.getElementById('bl7Motivo').value}\n📅 **DATA DA EXPULSÃO:** ${dataFmt}\n🔓 **LIBERADO A PARTIR DE:** ${document.getElementById('bl7Liberacao').value}\n➔ **RESPONSÁVEL:** ${document.getElementById('bl7Responsavel').value}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookPromocao, { content: msg }, "Blacklist de 7 dias aplicada!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

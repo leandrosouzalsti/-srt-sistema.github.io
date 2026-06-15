@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Cadastro de Membros</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .btn-acao {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 8px;
+            transition: transform 0.2s;
+        }
+        .btn-acao:hover {
+            transform: scale(1.2);
+        }
+        .campo-pesquisa {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+        }
+        .campo-pesquisa:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="../index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-main">⬅️ Menu Principal</a>
+        
+        <div class="form-container" style="border-color: #e74c3c; margin-top: 20px;">
+            <h2 id="tituloForm" style="color: #e74c3c;">📝 Cadastro de Funcionários</h2>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px;">
+                Cadastre ou edite os membros da SRT. O sistema bloqueia passaportes duplicados automaticamente.
+            </p>
+
+            <form id="formCadastroMembro" onsubmit="event.preventDefault(); salvarMembro();">
+                <input type="hidden" id="modoEdicaoId" value="">
+
+                <div class="form-group">
+                    <label for="cadNome">👤 NOME DO FUNCIONÁRIO (EM JOGO):</label>
+                    <input type="text" id="cadNome" required placeholder="Ex: GABRIEL">
+                </div>
+                <div class="form-group">
+                    <label for="cadIdJogo">🆔 ID DO JOGO (PASSAPORTE):</label>
+                    <input type="number" id="cadIdJogo" required placeholder="Ex: 235110">
+                </div>
+                <div class="form-group">
+                    <label for="cadIdDiscord">🆔 ID DO DISCORD (18-19 DÍGITOS):</label>
+                    <input type="number" id="cadIdDiscord" required placeholder="Copie o ID real do perfil do Discord">
+                </div>
+                <button type="submit" id="btnSalvar" class="btn-submit" style="background-color: #e74c3c; color: #fff;">Salvar Cadastro</button>
+                <button type="button" id="btnCancelarEdicao" class="btn-submit" style="background-color: #555; color: #fff; display: none; margin-top: 10px;" onclick="cancelarEdicao()">Cancelar Edição</button>
+            </form>
+        </div>
+
+        <div class="form-container" style="border-color: var(--border-color); margin-top: 20px;">
+            <h3 style="margin-top: 0; font-size: 16px;">👥 Membros Atuais na SRT</h3>
+            
+            <input type="text" id="pesquisaLista" class="campo-pesquisa" placeholder="🔍 Pesquisar por nome ou ID na lista..." oninput="listarMembros()">
+            
+            <div id="listaMembrosCadastrados" style="max-height: 250px; overflow-y: auto; font-size: 14px;">
+                </div>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        function obterMembros() {
+            return JSON.parse(localStorage.getItem('srt_membros')) || [];
+        }
+
+        function salvarMembro() {
+            const nome = document.getElementById('cadNome').value.trim().toUpperCase();
+            const idJogo = document.getElementById('cadIdJogo').value.trim();
+            const idDiscord = document.getElementById('cadIdDiscord').value.trim();
+            const modoEdicaoId = document.getElementById('modoEdicaoId').value;
+
+            if (idDiscord.length < 17) {
+                alert("Por favor, insira um ID do Discord válido (longo).");
+                return;
+            }
+
+            let membros = obterMembros();
+
+            if (modoEdicaoId === "") {
+                // MODO: NOVO CADASTRO - Bloqueia se o ID já existir
+                if (membros.some(m => m.idJogo === idJogo)) {
+                    alert(`❌ ERRO: O ID de Passaporte ${idJogo} já está cadastrado para outro funcionário!`);
+                    return;
+                }
+                membros.push({ nome, idJogo, idDiscord });
+                alert("Membro cadastrado com sucesso!");
+            } else {
+                // MODO: EDIÇÃO - Bloqueia se mudar para o ID de outro que já existe
+                if (idJogo !== modoEdicaoId && membros.some(m => m.idJogo === idJogo)) {
+                    alert(`❌ ERRO: Você tentou mudar para o ID ${idJogo}, mas ele já pertence a outro funcionário!`);
+                    return;
+                }
+                
+                // Atualiza o registro correto
+                membros = membros.map(m => {
+                    if (m.idJogo === modoEdicaoId) {
+                        return { nome, idJogo, idDiscord };
+                    }
+                    return m;
+                });
+                alert("Cadastro atualizado com sucesso!");
+                cancelarEdicao();
+            }
+
+            localStorage.setItem('srt_membros', JSON.stringify(membros));
+            document.getElementById('formCadastroMembro').reset();
+            listarMembros();
+        }
+
+        function prepararEdicao(idJogo) {
+            const membros = obterMembros();
+            const membro = membros.find(m => m.idJogo === idJogo);
+            if (!membro) return;
+
+            // Preenche os inputs com os dados antigos
+            document.getElementById('cadNome').value = membro.nome;
+            document.getElementById('cadIdJogo').value = membro.idJogo;
+            document.getElementById('cadIdDiscord').value = membro.idDiscord;
+            
+            // Ativa o modo de edição visual e lógico
+            document.getElementById('modoEdicaoId').value = membro.idJogo;
+            document.getElementById('tituloForm').textContent = "✏️ Editar Cadastro";
+            document.getElementById('tituloForm').style.color = "#f1c40f";
+            document.getElementById('btnSalvar').textContent = "Salvar Alterações";
+            document.getElementById('btnSalvar').style.background = "#f1c40f";
+            document.getElementById('btnSalvar').style.color = "#000";
+            document.getElementById('btnCancelarEdicao').style.display = "block";
+
+            // Rola a página suavemente para o topo do formulário
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicao() {
+            document.getElementById('formCadastroMembro').reset();
+            document.getElementById('modoEdicaoId').value = "";
+            document.getElementById('tituloForm').textContent = "📝 Cadastro de Funcionários";
+            document.getElementById('tituloForm').style.color = "#e74c3c";
+            document.getElementById('btnSalvar').textContent = "Salvar Cadastro";
+            document.getElementById('btnSalvar').style.background = "#e74c3c";
+            document.getElementById('btnSalvar').style.color = "#fff";
+            document.getElementById('btnCancelarEdicao').style.display = "none";
+        }
+
+        function deletarMembro(idJogo) {
+            if (!confirm("Tem certeza que deseja remover este membro definitivamente?")) return;
+            let membros = obterMembros();
+            membros = membros.filter(m => m.idJogo !== idJogo);
+            localStorage.setItem('srt_membros', JSON.stringify(membros));
+            
+            // Se deletar o cara que estava sendo editado, limpa a edição
+            if(document.getElementById('modoEdicaoId').value === idJogo) {
+                cancelarEdicao();
+            }
+            listarMembros();
+        }
+
+        function listarMembros() {
+            const container = document.getElementById('listaMembrosCadastrados');
+            const termoPesquisa = document.getElementById('pesquisaLista').value.toLowerCase().trim();
+            const membros = obterMembros();
+            
+            // Filtra a lista com base no que digitaram na busca
+            const filtrados = membros.filter(m => 
+                m.nome.toLowerCase().includes(termoPesquisa) || m.idJogo.toString().includes(termoPesquisa)
+            );
+
+            if (filtrados.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-style:italic; text-align:center;">Nenhum membro encontrado.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtrados.map(m => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:10px; margin-bottom:6px; border-radius:6px; border-left: 3px solid #e74c3c;">
+                    <span><strong>${m.nome}</strong> (ID: ${m.idJogo})</span>
+                    <div>
+                        <button class="btn-acao" onclick="prepararEdicao('${m.idJogo}')" title="Editar">✏️</button>
+                        <button class="btn-acao" onclick="deletarMembro('${m.idJogo}')" title="Excluir">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.onload = listarMembros;
+    </script>
+</body>
+</html>

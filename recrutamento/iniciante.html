@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Recrutamento Iniciante</title>
+    <meta name="description" content="Formulário de cadastro para novos recrutas iniciantes.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 500px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao Menu de Recrutamento</a>
+        
+        <div class="form-container">
+            <h1 style="display:none;">Recrutamento Iniciante</h1>
+            <h2>Recrutamento Iniciante</h2>
+            <div class="aviso-print">📢 <strong>Importante:</strong> Lembre-se de postar o print da contratação na call correspondente do Discord!</div>
+            
+            <form id="recInicianteForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="iniNome">➔ NOME COMPLETO:</label>
+                    <input type="text" id="iniNome" placeholder="Ex: Gabriel Silva" required>
+                </div>
+                <div class="form-group">
+                    <label for="iniId">➔ ID / PASSAPORTE:</label>
+                    <input type="text" id="iniId" placeholder="Ex: 12345" required>
+                </div>
+                <div class="form-group">
+                    <label for="iniTel">➔ TELEFONE:</label>
+                    <input type="text" id="iniTel" placeholder="Ex: 555-0192" required>
+                </div>
+                <div class="form-group">
+                    <label for="iniRecrutador">➔ RECRUTADOR (A):</label>
+                    <input type="text" id="iniRecrutador" placeholder="Ex: @leandrosouzalsti" required>
+                </div>
+                <div class="form-group">
+                    <label for="iniData">➔ DATA:</label>
+                    <input type="date" id="iniData" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-submit-iniciante">Postar Recrutamento Iniciante</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('recInicianteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('iniData').value.split('-').reverse().join('/');
+            const msg = `—————| 🌱 **RECRUTAMENTO INICIANTE** |—————\n➔ **NOME COMPLETO:** ${document.getElementById('iniNome').value}\n➔ **ID / PASSAPORTE:** ${document.getElementById('iniId').value}\n➔ **TELEFONE:** ${document.getElementById('iniTel').value}\n➔ **RECRUTADOR (A):** ${document.getElementById('iniRecrutador').value}\n➔ **DATA:** ${dataFmt}\n—————————————————————————`;
+            dispararWebhook(Config.webhookRecrutamentos, { content: msg }, "Recrutamento Iniciante Postado!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Registro de Promoção</title>
+    <meta name="description" content="Formulário para registrar promoção de colaboradores.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: var(--success-color);">
+            <h1 style="display:none;">Registro de Promoção</h1>
+            <h2 style="color: var(--success-color);">Registro de Promoção</h2>
+            
+            <form id="formPromocao" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="proNome">➔ NOME DO PROMOVIDO:</label>
+                    <input type="text" id="proNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="proId">➔ ID DO PROMOVIDO:</label>
+                    <input type="text" id="proId" required>
+                </div>
+                <div class="form-group">
+                    <label for="proCargoAntigo">➔ CARGO ANTIGO:</label>
+                    <input type="text" id="proCargoAntigo" required>
+                </div>
+                <div class="form-group">
+                    <label for="proNovoCargo">➔ NOVO CARGO:</label>
+                    <input type="text" id="proNovoCargo" required>
+                </div>
+                <div class="form-group">
+                    <label for="proResponsavel">➔ RESPONSÁVEL PELO UP:</label>
+                    <input type="text" id="proResponsavel" required>
+                </div>
+                <div class="form-group">
+                    <label for="proData">➔ DATA:</label>
+                    <input type="date" id="proData" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--success-color);" id="btn-submit-promo">Enviar Promoção</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formPromocao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('proData').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n📈 **PROMOÇÃO DE COLABORADOR**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO PROMOVIDO:** ${document.getElementById('proNome').value}\n➔ **ID DO PROMOVIDO:** ${document.getElementById('proId').value}\n➔ **CARGO ANTIGO:** ${document.getElementById('proCargoAntigo').value}\n➔ **NOVO CARGO:** ${document.getElementById('proNovoCargo').value}\n➔ **RESPONSÁVEL PELO UP:** ${document.getElementById('proResponsavel').value}\n📅 **DATA:** ${dataFmt}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookPromocao, { content: msg }, "Promoção enviada com sucesso!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

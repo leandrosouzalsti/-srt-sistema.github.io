@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Demissão Limpa</title>
+    <meta name="description" content="Formulário para registrar demissão limpa (sem blacklist) de colaboradores.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: var(--success-color);">
+            <h1 style="display:none;">Demissão Limpa</h1>
+            <h2 style="color: var(--success-color);">Demissão Limpa</h2>
+            
+            <form id="formDemissaoLimpa" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="limpaNome">➔ NOME DO DEMITIDO:</label>
+                    <input type="text" id="limpaNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="limpaId">➔ ID DO DEMITIDO:</label>
+                    <input type="text" id="limpaId" required>
+                </div>
+                <div class="form-group">
+                    <label for="limpaCargo">➔ CARGO QUE OCUPAVA:</label>
+                    <input type="text" id="limpaCargo" required>
+                </div>
+                <div class="form-group">
+                    <label for="limpaMotivo">➔ MOTIVO DA SAÍDA:</label>
+                    <input type="text" id="limpaMotivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="limpaResponsavel">➔ RESPONSÁVEL:</label>
+                    <input type="text" id="limpaResponsavel" required>
+                </div>
+                <div class="form-group">
+                    <label for="limpaData">➔ DATA:</label>
+                    <input type="date" id="limpaData" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--success-color);" id="btn-submit-limpa">Postar Demissão Limpa</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formDemissaoLimpa').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('limpaData').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n✅ **DEMISSÃO LIMPA REGISTRADA**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO DEMITIDO:** ${document.getElementById('limpaNome').value}\n➔ **ID DO DEMITIDO:** ${document.getElementById('limpaId').value}\n➔ **CARGO QUE OCUPAVA:** ${document.getElementById('limpaCargo').value}\n➔ **MOTIVO DA SAÍDA:** ${document.getElementById('limpaMotivo').value}\n➔ **RESPONSÁVEL:** ${document.getElementById('limpaResponsavel').value}\n📅 **DATA:** ${dataFmt}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookPromocao, { content: msg }, "Demissão Limpa postada!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

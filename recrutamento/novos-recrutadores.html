@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Novos Recrutadores</title>
+    <meta name="description" content="Formulário de avaliação de novos recrutadores.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 500px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao Menu de Recrutamento</a>
+        
+        <div class="form-container" style="border-color: #3498db;">
+            <h1 style="display:none;">Novos Recrutadores</h1>
+            <h2 style="color: #3498db;">Novos Recrutadores</h2>
+            
+            <form id="novosRecrutadoresForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="novInstNome">➔ NOME DO INSTRUTOR:</label>
+                    <input type="text" id="novInstNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="novInstId">➔ ID DO INSTRUTOR:</label>
+                    <input type="text" id="novInstId" required>
+                </div>
+                <div class="form-group">
+                    <label for="novAluNome">➔ NOME DO ALUNO:</label>
+                    <input type="text" id="novAluNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="novAluId">➔ ID DO ALUNO:</label>
+                    <input type="text" id="novAluId" required>
+                </div>
+                <div class="form-group">
+                    <label for="novData">➔ DATA DA AVALIAÇÃO:</label>
+                    <input type="date" id="novData" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: #3498db;" id="btn-submit-novos-rec">Postar Novo Recrutador</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('novosRecrutadoresForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('novData').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n🎖️ **NOVO RECRUTADOR AVALIADO**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO INSTRUTOR:** ${document.getElementById('novInstNome').value}\n➔ **ID DO INSTRUTOR:** ${document.getElementById('novInstId').value}\n➔ **NOME DO ALUNO:** ${document.getElementById('novAluNome').value}\n➔ **ID DO ALUNO:** ${document.getElementById('novAluId').value}\n📅 **DATA DA AVALIAÇÃO:** ${dataFmt}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookRecrutamentos, { content: msg }, "Novo Recrutador registrado!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

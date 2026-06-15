@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Aviso de Ausência</title>
+    <meta name="description" content="Formulário para registrar aviso de ausência de recrutadores.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 500px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao Menu de Recrutamento</a>
+        
+        <div class="form-container" style="border-color: #9b59b6;">
+            <h1 style="display:none;">Aviso de Ausência</h1>
+            <h2 style="color: #9b59b6;">Aviso de Ausência</h2>
+            
+            <form id="ausenciaRecrutadorForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="ausNome">➔ NOME DO RECRUTADOR:</label>
+                    <input type="text" id="ausNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="ausId">➔ ID DO RECRUTADOR:</label>
+                    <input type="text" id="ausId" required>
+                </div>
+                <div class="form-group">
+                    <label for="ausMotivo">➔ MOTIVO DA AUSÊNCIA:</label>
+                    <input type="text" id="ausMotivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="ausDataInicio">➔ DATA DE INÍCIO:</label>
+                    <input type="date" id="ausDataInicio" required>
+                </div>
+                <div class="form-group">
+                    <label for="ausDataFim">➔ DATA DE TÉRMINO:</label>
+                    <input type="date" id="ausDataFim" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: #9b59b6;" id="btn-submit-ausencia">Postar Aviso de Ausência</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('ausenciaRecrutadorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataIniFmt = document.getElementById('ausDataInicio').value.split('-').reverse().join('/');
+            const dataFimFmt = document.getElementById('ausDataFim').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n💤 **AVISO DE AUSÊNCIA DE RECRUTADOR**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO RECRUTADOR:** ${document.getElementById('ausNome').value}\n➔ **ID DO RECRUTADOR:** ${document.getElementById('ausId').value}\n➔ **MOTIVO DA AUSÊNCIA:** ${document.getElementById('ausMotivo').value}\n📅 **DATA DE INÍCIO:** ${dataIniFmt}\n📅 **DATA DE TÉRMINO:** ${dataFimFmt}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookRecrutamentos, { content: msg }, "Aviso de ausência postado!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

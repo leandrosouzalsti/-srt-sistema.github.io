@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Registro de Rebaixamento</title>
+    <meta name="description" content="Formulário para registrar rebaixamento de cargo de colaboradores.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: var(--info-color);">
+            <h1 style="display:none;">Registro de Rebaixamento</h1>
+            <h2 style="color: var(--info-color);">Registro de Rebaixamento</h2>
+            
+            <form id="formRebaixamento" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="rebNome">➔ NOME DO REBAIXADO:</label>
+                    <input type="text" id="rebNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebId">➔ ID DO REBAIXADO:</label>
+                    <input type="text" id="rebId" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebCargoAntigo">➔ CARGO ANTIGO:</label>
+                    <input type="text" id="rebCargoAntigo" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebNovoCargo">➔ NOVO CARGO:</label>
+                    <input type="text" id="rebNovoCargo" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebMotivo">➔ MOTIVO DO REBAIXAMENTO:</label>
+                    <input type="text" id="rebMotivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebResponsavel">➔ RESPONSÁVEL:</label>
+                    <input type="text" id="rebResponsavel" required>
+                </div>
+                <div class="form-group">
+                    <label for="rebData">➔ DATA:</label>
+                    <input type="date" id="rebData" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--info-color);" id="btn-submit-reb">Enviar Rebaixamento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formRebaixamento').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('rebData').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n📉 **REBAIXAMENTO DE COLABORADOR**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO REBAIXADO:** ${document.getElementById('rebNome').value}\n➔ **ID DO REBAIXADO:** ${document.getElementById('rebId').value}\n➔ **CARGO ANTIGO:** ${document.getElementById('rebCargoAntigo').value}\n➔ **NOVO CARGO:** ${document.getElementById('rebNovoCargo').value}\n➔ **MOTIVO DO REBAIXAMENTO:** ${document.getElementById('rebMotivo').value}\n➔ **RESPONSÁVEL:** ${document.getElementById('rebResponsavel').value}\n📅 **DATA:** ${dataFmt}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookPromocao, { content: msg }, "Rebaixamento enviado com sucesso!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

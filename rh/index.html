@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Recursos Humanos</title>
+    <meta name="description" content="Sub-menu de gestão e formulários de recursos humanos.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 950px;">
+        <a href="../index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-main">⬅️ Menu Principal</a>
+        
+        <div class="form-container" style="text-align: center;">
+            <h1 style="display:none;">Gestão de Recursos Humanos (RH)</h1>
+            <h2>Gestão de Recursos Humanos (RH)</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">Selecione a ação de gerenciamento a ser aplicada:</p>
+            
+            <nav class="grid-categorias" style="grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 15px;">
+                <a href="advertencia.html" style="text-decoration: none;" id="link-rh-advertencia">
+                    <div class="card-categoria" style="border-color: var(--primary-color); padding: 25px 10px;">
+                        <div class="icon">⚠️</div>
+                        <div class="title" style="font-size: 12px; color: var(--primary-color);">Advertência</div>
+                    </div>
+                </a>
+                <a href="promocao.html" style="text-decoration: none;" id="link-rh-promocao">
+                    <div class="card-categoria" style="border-color: var(--success-color); padding: 25px 10px;">
+                        <div class="icon">📈</div>
+                        <div class="title" style="font-size: 12px; color: var(--success-color);">Promoção</div>
+                    </div>
+                </a>
+                <a href="rebaixamento.html" style="text-decoration: none;" id="link-rh-rebaixamento">
+                    <div class="card-categoria" style="border-color: var(--info-color); padding: 25px 10px;">
+                        <div class="icon">📉</div>
+                        <div class="title" style="font-size: 12px; color: var(--info-color);">Rebaixamento</div>
+                    </div>
+                </a>
+                <a href="demissao-limpa.html" style="text-decoration: none;" id="link-rh-demissao-limpa">
+                    <div class="card-categoria" style="border-color: var(--success-color); padding: 25px 10px;">
+                        <div class="icon">✅</div>
+                        <div class="title" style="font-size: 12px; color: var(--success-color);">Demissão Limpa</div>
+                    </div>
+                </a>
+                <a href="blacklist-7d.html" style="text-decoration: none;" id="link-rh-blacklist-7d">
+                    <div class="card-categoria" style="border-color: var(--secondary-color); padding: 25px 10px;">
+                        <div class="icon">⏳</div>
+                        <div class="title" style="font-size: 12px; color: var(--secondary-color);">Blacklist 7 Dias</div>
+                    </div>
+                </a>
+                <a href="blacklist-perm.html" style="text-decoration: none;" id="link-rh-blacklist-perm">
+                    <div class="card-categoria" style="border-color: #c0392b; padding: 25px 10px;">
+                        <div class="icon">🚫</div>
+                        <div class="title" style="font-size: 12px; color: #c0392b;">BL Permanente</div>
+                    </div>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

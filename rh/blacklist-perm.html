@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Blacklist Permanente</title>
+    <meta name="description" content="Formulário para demissão com inclusão permanente na blacklist.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-menu">⬅️ Voltar ao RH</a>
+        
+        <div class="form-container" style="border-color: #c0392b;">
+            <h1 style="display:none;">Blacklist Permanente</h1>
+            <h2 style="color: #c0392b;">Blacklist Permanente</h2>
+            
+            <form id="formBlPerm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="permNome">➔ NOME DO INFRATOR:</label>
+                    <input type="text" id="permNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="permId">➔ ID DO INFRATOR:</label>
+                    <input type="text" id="permId" required>
+                </div>
+                <div class="form-group">
+                    <label for="permMotivo">➔ INFRAÇÃO / MOTIVO REAL:</label>
+                    <input type="text" id="permMotivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="permData">➔ DATA DA EXPULSÃO:</label>
+                    <input type="date" id="permData" required>
+                </div>
+                <div class="form-group">
+                    <label for="permResponsavel">➔ RESPONSÁVEL APLICADOR:</label>
+                    <input type="text" id="permResponsavel" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: #c0392b;" id="btn-submit-blperm">Postar Blacklist Permanente</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('formBlPerm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dataFmt = document.getElementById('permData').value.split('-').reverse().join('/');
+            const msg = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n🚫 **BLACKLIST PERMANENTE APLICADA**\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n➔ **NOME DO INFRATOR:** ${document.getElementById('permNome').value}\n➔ **ID DO INFRATOR:** ${document.getElementById('permId').value}\n➔ **INFRAÇÃO / MOTIVO REAL:** ${document.getElementById('permMotivo').value}\n📅 **DATA DA EXPULSÃO:** ${dataFmt}\n➔ **RESPONSÁVEL APLICADOR:** ${document.getElementById('permResponsavel').value}\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`;
+            dispararWebhook(Config.webhookPromocao, { content: msg }, "Blacklist Permanente registrada!", this, "index.html");
+        });
+    </script>
+</body>
+</html>

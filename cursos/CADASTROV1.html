@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT Motors - Cadastro de Membros</title>
+    <meta name="description" content="Área de cadastro prévio de funcionários para agilizar as fichas corporativas.">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="form-wrapper" style="max-width: 550px;">
+        <a href="../index.html" class="btn-voltar" style="text-decoration: none;" id="btn-back-main">⬅️ Menu Principal</a>
+        
+        <div class="form-container" style="border-color: #e74c3c; margin-top: 20px;">
+            <h1 style="display:none;">Cadastro de Funcionários</h1>
+            <h2 style="color: #e74c3c;">📝 Cadastro de Funcionários</h2>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px;">
+                Cadastre os membros da SRT aqui uma única vez para liberar a automação nas fichas de cursos.
+            </p>
+
+            <form id="formCadastroMembro" onsubmit="event.preventDefault(); salvarMembro();">
+                <div class="form-group">
+                    <label for="cadNome">👤 NOME DO FUNCIONÁRIO (EM JOGO):</label>
+                    <input type="text" id="cadNome" required placeholder="Ex: GABRIEL">
+                </div>
+                <div class="form-group">
+                    <label for="cadIdJogo">🆔 ID DO JOGO (PASSAPORTE):</label>
+                    <input type="number" id="cadIdJogo" required placeholder="Ex: 235110">
+                </div>
+                <div class="form-group">
+                    <label for="cadIdDiscord">🆔 ID DO DISCORD (18 ou 19 DÍGITOS):</label>
+                    <input type="number" id="cadIdDiscord" required placeholder="Copie o ID real do perfil do Discord da pessoa">
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: #e74c3c; color: #fff;">Salvar Cadastro</button>
+            </form>
+        </div>
+
+        <div class="form-container" style="border-color: var(--border-color); margin-top: 20px;">
+            <h3 style="margin-top: 0; font-size: 16px;">👥 Membros Atuais na SRT</h3>
+            <div id="listaMembrosCadastrados" style="max-height: 250px; overflow-y: auto; font-size: 14px;">
+                </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        function obterMembros() {
+            return JSON.parse(localStorage.getItem('srt_membros')) || [];
+        }
+
+        function salvarMembro() {
+            const nome = document.getElementById('cadNome').value.trim().toUpperCase();
+            const idJogo = document.getElementById('cadIdJogo').value.trim();
+            const idDiscord = document.getElementById('cadIdDiscord').value.trim();
+
+            if (idDiscord.length < 17) {
+                alert("Por favor, insira um ID do Discord válido (longo, obtido nas configurações de desenvolvedor/perfil).");
+                return;
+            }
+
+            const membros = obterMembros();
+            
+            // Evita duplicados pelo passaporte
+            if (membros.some(m => m.idJogo === idJogo)) {
+                alert("Este ID de Passaporte já está cadastrado no sistema!");
+                return;
+            }
+
+            membros.push({ nome, idJogo, idDiscord });
+            localStorage.setItem('srt_membros', JSON.stringify(membros));
+            
+            document.getElementById('formCadastroMembro').reset();
+            alert("Membro cadastrado com sucesso!");
+            listarMembros();
+        }
+
+        function deletarMembro(idJogo) {
+            if (!confirm("Tem certeza que deseja remover este membro?")) return;
+            let membros = obterMembros();
+            membros = membros.filter(m => m.idJogo !== idJogo);
+            localStorage.setItem('srt_membros', JSON.stringify(membros));
+            listarMembros();
+        }
+
+        function listarMembros() {
+            const container = document.getElementById('listaMembrosCadastrados');
+            const membros = obterMembros();
+            if (membros.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-style:italic; text-align:center;">Nenhum membro cadastrado até o momento.</p>`;
+                return;
+            }
+            container.innerHTML = membros.map(m => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:10px; margin-bottom:6px; border-radius:6px; border-left: 3px solid #e74c3c;">
+                    <span><strong>${m.nome}</strong> (ID: ${m.idJogo})</span>
+                    <button onclick="deletarMembro('${m.idJogo}')" style="background:none; border:none; cursor:pointer; font-size:16px;">❌</button>
+                </div>
+            `).join('');
+        }
+
+        window.onload = listarMembros;
+    </script>
+</body>
+</html>
