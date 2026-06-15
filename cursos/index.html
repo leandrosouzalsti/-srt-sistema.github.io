@@ -19,6 +19,15 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;
         }
         .resultado-item:hover { background: #f1c40f; color: #000; }
+        
+        /* Botão estilizado para retornar etapas */
+        .btn-retornar-etapa {
+            background: transparent; border: 1px solid #e74c3c; color: #e74c3c;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 12px; margin-bottom: 15px;
+            display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;
+        }
+        .btn-retornar-etapa:hover { background: #e74c3c; color: #fff; }
     </style>
 </head>
 <body>
@@ -67,6 +76,7 @@
             </form>
 
             <div id="area-pendencia-pagamento" class="bloco-etapa-curso" style="display: none; border-color: var(--info-color);">
+                <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso1()">↩️ Voltar ao Passo 1 (Editar Cursos/Aluno)</button>
                 <h3 style="color: var(--info-color); margin-top: 0;">💰 Passo 2: Pendência de Pagamento</h3>
                 <div id="dados-da-pendencia" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--info-color); line-height: 1.5;"></div>
                 <form id="formConfirmarPagamento" onsubmit="event.preventDefault();">
@@ -78,12 +88,16 @@
                             <div id="resultadosAplicador" class="lista-resultados"></div>
                         </div>
                         <input type="hidden" id="idJogoAplicadorSelecionado" required>
+                        <small style="color: var(--text-muted); display:block; margin-top:5px;">
+                            Não achou o aplicador? <a href="cadastro.html" style="color:#2196f3; text-decoration:underline;">Clique aqui para cadastrá-lo</a>.
+                        </small>
                     </div>
                     <button type="submit" class="btn-submit" style="background-color: var(--info-color);">Confirmar Pagamento Recebido</button>
                 </form>
             </div>
 
             <div id="area-aprovacao-curso" class="bloco-etapa-curso" style="display: none; border-color: var(--success-color);">
+                <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso2()">↩️ Voltar ao Passo 2 (Mudar Aplicador)</button>
                 <h3 style="color: var(--success-color); margin-top: 0;">🥇 Passo 3: Homologação do Curso</h3>
                 <div id="dados-da-aprovacao" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--success-color); line-height: 1.5;"></div>
                 <form id="formConfirmarAprovacao" onsubmit="event.preventDefault();">
@@ -93,6 +107,7 @@
             </div>
 
             <div id="area-gerar-certificado" class="bloco-etapa-curso" style="display: none; border-color: var(--purple-color);">
+                <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso3()">↩️ Voltar ao Passo 3 (Homologação)</button>
                 <h3 style="color: var(--purple-color); margin-top: 0;">📜 Passo 4: Conclusão e Certificado</h3>
                 <form id="formGerarCertificado" onsubmit="event.preventDefault();">
                     <button type="submit" class="btn-submit" style="background-color: var(--purple-color);">Gerar e Enviar Certificado de Luxo</button>
@@ -106,13 +121,15 @@
 
     <script src="../js/main.js"></script>
     <script>
+        // TABELA COM VALORES CORRIGIDOS (VENDAS AJUSTADO PARA 4.0kk)
         const tabelaCursosCompleta = {
-            "CURSO DE AVIÃO [✈️]": { valor: 5.0, idCargo: "1495036146151981180" },
+            "CURSO DE AVIÃO [✈️]": { valor: 15.0, idCargo: "1495036146151981180" },
             "CURSO DE CAMINHÃO [🚛]": { valor: 2.0, idCargo: "1515166380750672096" },
-            "CURSO DE BARCO [⛵️]": { valor: 3.0, idCargo: "1495036773049307166" },
-            "CURSO DE HELICÓPTERO [🚁]": { valor: 8.0, idCargo: "1495036451451310140" },
+            "CURSO DE BARCO [⛵️]": { valor: 15.0, idCargo: "1495036773049307166" },
+            "CURSO DE HELICÓPTERO [🚁]": { valor: 7.0, idCargo: "1495036451451310140" },
             "CURSO DE VENDAS [📚]": { valor: 4.0, idCargo: "1495037336843718728" },
-            "CURSO DE GUINCHO [🚛]": { valor: 1.5, idCargo: "1495095001636405438" }
+            "CURSO DE GUINCHO [🚛]": { valor: 1.5, idCargo: "1495095001636405438" },
+            "INSTRUTOR [📚]": { valor: 10.0, idCargo: "1495066830308380842" }
         };
 
         const opcoesCursos = Object.keys(tabelaCursosCompleta);
@@ -121,6 +138,22 @@
 
         function carregarMembros() {
             listaMembrosGlobais = JSON.parse(localStorage.getItem('srt_membros')) || [];
+        }
+
+        /* FUNÇÕES DE NAVEGAÇÃO RETRÔ */
+        function voltarParaPasso1() {
+            document.getElementById('area-pendencia-pagamento').style.display = 'none';
+            document.getElementById('cursosForm').style.display = 'block';
+        }
+
+        function voltarParaPasso2() {
+            document.getElementById('area-aprovacao-curso').style.display = 'none';
+            document.getElementById('area-pendencia-pagamento').style.display = 'block';
+        }
+
+        function voltarParaPasso3() {
+            document.getElementById('area-gerar-certificado').style.display = 'none';
+            document.getElementById('area-aprovacao-curso').style.display = 'block';
         }
 
         function configurarFiltroBusca(idInputTexto, idInputHidden, idContainerResultados) {
@@ -256,6 +289,21 @@
             const mascaraTextoCompleta = `${siglaAtual} | ${alunoObjeto.nome} ${alunoObjeto.idJogo}`;
             const mencaoClicavelMembro = `<@${alunoObjeto.idDiscord}>`;
 
+            dadosSessaoCurso = { 
+                id: alunoObjeto.idJogo, 
+                nomeCru: alunoObjeto.nome, 
+                idDiscord: alunoObjeto.idDiscord,
+                cargoNome: tagCargo,
+                data: dataFicha, 
+                cursosTexto: listaCursosFormatada,
+                cursosMencoes: listaCursosMencoes,
+                cursosLista: listaCursosArray, 
+                nomeCompleto: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, 
+                valorTotalRepasse: `${somaTotalRepasse}kk`, 
+                aplicador: "",
+                aplicadorNomeCru: ""
+            }; 
+            
             const dadosSolicitacao = { 
                 embeds: [{ 
                     title: "🎓 Nova Solicitação de Cursos", 
@@ -275,22 +323,7 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-                    dadosSessaoCurso = { 
-                        id: alunoObjeto.idJogo, 
-                        nomeCru: alunoObjeto.nome, 
-                        idDiscord: alunoObjeto.idDiscord,
-                        cargoNome: tagCargo,
-                        data: dataFicha, 
-                        cursosTexto: listaCursosFormatada,
-                        cursosMencoes: listaCursosMencoes,
-                        cursosLista: listaCursosArray, 
-                        nomeCompleto: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, 
-                        valorTotalRepasse: `${somaTotalRepasse}kk`, 
-                        aplicador: "",
-                        aplicadorNomeCru: ""
-                    }; 
-                    
-                    document.getElementById('dados-da-pendencia').innerHTML = `<strong>🆔 ID Jogo:</strong> ${dadosSessaoCurso.id}<br><strong>📅 Data:</strong> ${dadosSessaoCurso.data}<br><strong>📖 Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}<hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;"><strong>💰 REPASSE:</strong> <span class="destaque-valor">${dadosSessaoCurso.valorTotalRepasse}</span>`; 
+                    document.getElementById('dados-da-pendencia').innerHTML = `<strong>🆔 ID Jogo:</strong> ${dadosSessaoCurso.id}<br><strong>📅 Data:</strong> ${dadosSessaoCurso.data}<br><strong>📖 Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}<hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;"><strong>💰 REPASSE TOTAL:</strong> <span class="destaque-valor">${dadosSessaoCurso.valorTotalRepasse}</span>`; 
                     document.getElementById('cursosForm').style.display = 'none'; 
                     document.getElementById('area-pendencia-pagamento').style.display = 'block'; 
                 }
@@ -372,7 +405,7 @@
             xhr.send(JSON.stringify(dadosAprovacao));
         });
 
-        // STEP 4 SUBMIT (CANVAS HIGH QUALITY - DESIGN FIEL À IMAGEM)
+        // STEP 4 SUBMIT (CANVAS HIGH QUALITY)
         document.getElementById('formGerarCertificado').addEventListener('submit', function(event) {
             event.preventDefault(); 
             if(!dadosSessaoCurso) return; 
@@ -389,209 +422,126 @@
 
                 let cursoNome = dadosSessaoCurso.cursosLista[index];
 
-                // 1. CAMADA DE FUNDO (Gradiente Charcoal Carbono de Alta Textura)
+                // Fundo Charcoal Carbono Gradiente
                 let gradFundo = ctx.createRadialGradient(600, 400, 50, 600, 400, 750);
                 gradFundo.addColorStop(0, '#1c1e22');
                 gradFundo.addColorStop(1, '#0b0c0e');
                 ctx.fillStyle = gradFundo;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Textura de micro-linhas para efeito de diploma tradicional
+                // Textura sutil de linhas
                 ctx.strokeStyle = 'rgba(212, 175, 55, 0.015)';
                 ctx.lineWidth = 1;
                 for (let i = 0; i < canvas.width; i += 25) {
                     ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
                 }
 
-                // 2. ABAS GEOMÉTRICAS FLUTUANTES (Efeito Laterais Escuras 3D da Imagem)
-                // Canto Superior Direito Sobreposto
+                // Abas geométricas dos cantos (Efeito 3D)
                 ctx.fillStyle = '#111215';
-                ctx.beginPath();
-                ctx.moveTo(850, 0);
-                ctx.lineTo(1200, 350);
-                ctx.lineTo(1200, 0);
-                ctx.closePath(); ctx.fill();
-
+                ctx.beginPath(); ctx.moveTo(850, 0); ctx.lineTo(1200, 350); ctx.lineTo(1200, 0); ctx.closePath(); ctx.fill();
                 ctx.fillStyle = '#17191d';
-                ctx.beginPath();
-                ctx.moveTo(980, 0);
-                ctx.lineTo(1200, 220);
-                ctx.lineTo(1200, 0);
-                ctx.closePath(); ctx.fill();
-
-                // Canto Inferior Esquerdo
+                ctx.beginPath(); ctx.moveTo(980, 0); ctx.lineTo(1200, 220); ctx.lineTo(1200, 0); ctx.closePath(); ctx.fill();
                 ctx.fillStyle = '#111215';
-                ctx.beginPath();
-                ctx.moveTo(0, 450);
-                ctx.lineTo(350, 800);
-                ctx.lineTo(0, 800);
-                ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(0, 450); ctx.lineTo(350, 800); ctx.lineTo(0, 800); ctx.closePath(); ctx.fill();
 
-                // 3. MOLDURA DUPLA DE COMPOSIÇÃO EM OURO NOBRE
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = '#d4af37';
+                // Molduras douradas
+                ctx.lineWidth = 5; ctx.strokeStyle = '#d4af37';
                 ctx.strokeRect(45, 45, canvas.width - 90, canvas.height - 90);
-
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+                ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
                 ctx.strokeRect(58, 58, canvas.width - 116, canvas.height - 116);
 
-                // Cantoneiras Ornamentadas nos 4 cantos
-                function desenharCantoOrnamental(x, y, rx, ry) {
-                    ctx.strokeStyle = '#d4af37';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(x, y + (40 * ry));
-                    ctx.lineTo(x, y);
-                    ctx.lineTo(x + (40 * rx), y);
-                    ctx.stroke();
-                    ctx.fillStyle = '#d4af37';
-                    ctx.beginPath();
-                    ctx.arc(x + (15 * rx), y + (15 * ry), 4, 0, Math.PI * 2);
-                    ctx.fill();
+                // Cantoneiras
+                function desenharC(x, y, rx, ry) {
+                    ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.moveTo(x, y + (40 * ry)); ctx.lineTo(x, y); ctx.lineTo(x + (40 * rx), y); ctx.stroke();
+                    ctx.fillStyle = '#d4af37'; ctx.beginPath(); ctx.arc(x + (15 * rx), y + (15 * ry), 4, 0, Math.PI * 2); ctx.fill();
                 }
-                desenharCantoOrnamental(33, 33, 1, 1);
-                desenharCantoOrnamental(1167, 33, -1, 1);
-                desenharCantoOrnamental(33, 767, 1, -1);
-                desenharCantoOrnamental(1167, 767, -1, -1);
+                desenharC(33, 33, 1, 1); desenharC(1167, 33, -1, 1);
+                desenharC(33, 767, 1, -1); desenharC(1167, 767, -1, -1);
 
-                // 4. FITAS DE TECIDO E MEDALHA SRT MOTORS (Lado Esquerdo)
-                ctx.fillStyle = '#15161a';
-                ctx.fillRect(175, 45, 65, 350);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#d4af37';
-                ctx.strokeRect(175, 45, 65, 350);
+                // Fitas e Medalha SRT
+                ctx.fillStyle = '#15161a'; ctx.fillRect(175, 45, 65, 350);
+                ctx.lineWidth = 2; ctx.strokeStyle = '#d4af37'; ctx.strokeRect(175, 45, 65, 350);
+                ctx.fillStyle = '#8a1d21'; ctx.fillRect(190, 45, 35, 380); ctx.strokeRect(190, 45, 35, 380);
 
-                ctx.fillStyle = '#8a1d21'; // Vermelho Vinho Premium
-                ctx.fillRect(190, 45, 35, 380);
-                ctx.strokeRect(190, 45, 35, 380);
-
-                let cx = 207;
-                let cy = 385;
-
-                // Franja Trançada Traseira do Selo (Efeito Plissado)
-                ctx.fillStyle = '#bfa15f';
-                ctx.beginPath();
+                let cx = 207; let cy = 385;
+                ctx.fillStyle = '#bfa15f'; ctx.beginPath();
                 for (let i = 0; i < 40; i++) {
                     let ang = (i / 40) * Math.PI * 2;
-                    let rx1 = cx + Math.cos(ang) * 75;
-                    let ry1 = cy + Math.sin(ang) * 75;
-                    ctx.lineTo(rx1, ry1);
+                    ctx.lineTo(cx + Math.cos(ang) * 75, cy + Math.sin(ang) * 75);
                     ang += (1 / 80) * Math.PI * 2;
-                    let rx2 = cx + Math.cos(ang) * 68;
-                    let ry2 = cy + Math.sin(ang) * 68;
-                    ctx.lineTo(rx2, ry2);
+                    ctx.lineTo(cx + Math.cos(ang) * 68, cy + Math.sin(ang) * 68);
                 }
                 ctx.closePath(); ctx.fill();
-
-                // Corpo Interno Dourado
-                ctx.fillStyle = '#d4af37';
-                ctx.beginPath(); ctx.arc(cx, cy, 65, 0, Math.PI * 2); ctx.fill();
-
-                // Centro Escuro do Selo
-                ctx.fillStyle = '#111215';
-                ctx.beginPath(); ctx.arc(cx, cy, 56, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#d4af37'; ctx.beginPath(); ctx.arc(cx, cy, 65, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#111215'; ctx.beginPath(); ctx.arc(cx, cy, 56, 0, Math.PI * 2); ctx.fill();
                 ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 2; ctx.stroke();
 
-                // Inscrições Gravadas na Medalha
-                ctx.textAlign = 'center';
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 18px sans-serif';
+                ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff'; ctx.font = 'bold 18px sans-serif';
                 ctx.fillText("SRT", cx, cy - 12);
-                ctx.font = 'bold 11px sans-serif';
-                ctx.fillStyle = '#d4af37';
-                ctx.fillText("MOTORS", cx, cy + 8);
-                ctx.font = '16px sans-serif';
-                ctx.fillText("🔧", cx, cy + 28);
+                ctx.font = 'bold 11px sans-serif'; ctx.fillStyle = '#d4af37'; ctx.fillText("MOTORS", cx, cy + 8);
+                ctx.font = '16px sans-serif'; ctx.fillText("🔧", cx, cy + 28);
 
-                // BRASÃO SUPERIOR DIREITO (Selo SRT Training da Imagem)
-                ctx.fillStyle = '#d4af37';
-                ctx.beginPath();
-                ctx.moveTo(1000, 110); ctx.lineTo(1050, 110); ctx.lineTo(1065, 140);
-                ctx.lineTo(1032, 190); ctx.lineTo(1000, 140); ctx.closePath(); ctx.fill();
-                ctx.fillStyle = '#111215';
-                ctx.beginPath();
-                ctx.moveTo(1005, 115); ctx.lineTo(1045, 115); ctx.lineTo(1058, 142);
-                ctx.lineTo(1032, 182); ctx.lineTo(1007, 142); ctx.closePath(); ctx.fill();
+                // Selo SRT Training Topo Direito
+                ctx.fillStyle = '#d4af37'; ctx.beginPath();
+                ctx.moveTo(1000, 110); ctx.lineTo(1050, 110); ctx.lineTo(1065, 140); ctx.lineTo(1032, 190); ctx.lineTo(1000, 140); ctx.closePath(); ctx.fill();
+                ctx.fillStyle = '#111215'; ctx.beginPath();
+                ctx.moveTo(1005, 115); ctx.lineTo(1045, 115); ctx.lineTo(1058, 142); ctx.lineTo(1032, 182); ctx.lineTo(1007, 142); ctx.closePath(); ctx.fill();
                 ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px sans-serif'; ctx.fillText("SRT", 1032, 134);
                 ctx.fillStyle = '#d4af37'; ctx.font = '8px sans-serif'; ctx.fillText("TRAINING", 1032, 155);
 
-                // 5. DIAGRAMAÇÃO DE TEXTOS E TIPOGRAFIA LUXURY
-                ctx.textAlign = 'center';
-                ctx.fillStyle = '#a0a8b5';
-                ctx.font = 'bold 14px sans-serif';
-                ctx.letterSpacing = "5px";
+                // Textos do Certificado
+                ctx.fillStyle = '#a0a8b5'; ctx.font = 'bold 14px sans-serif'; ctx.letterSpacing = "5px";
                 ctx.fillText("SRT MOTORS - CIDADE NOBRE RP - DEPARTAMENTO DE TREINAMENTO", 630, 120);
                 ctx.letterSpacing = "0px";
 
-                // Título com Efeito Gradiente Metalizado Ouro
                 let gradTexto = ctx.createLinearGradient(450, 0, 810, 0);
                 gradTexto.addColorStop(0, '#ffffff'); gradTexto.addColorStop(0.5, '#f4e3a3'); gradTexto.addColorStop(1, '#ffffff');
-                ctx.fillStyle = gradTexto;
-                ctx.font = 'bold 52px "Times New Roman", Georgia, serif';
+                ctx.fillStyle = gradTexto; ctx.font = 'bold 52px Georgia, serif';
                 ctx.fillText("CERTIFICADO DE CONCLUSÃO", 630, 205);
 
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = '19px sans-serif';
+                ctx.fillStyle = '#e2e8f0'; ctx.font = '19px sans-serif';
                 ctx.fillText("Este certificado é solenemente conferido a:", 630, 275);
 
-                // Nome do Aluno Manuscrito Elegante
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'italic bold 64px Georgia, "Times New Roman", serif';
+                ctx.fillStyle = '#ffffff'; ctx.font = 'italic bold 64px Georgia, serif';
                 ctx.fillText(dadosSessaoCurso.nomeCru, 630, 360);
 
-                // Linha de Divisão abaixo do Nome
                 let gradLinha = ctx.createLinearGradient(400, 0, 860, 0);
                 gradLinha.addColorStop(0, 'rgba(212,175,55,0)'); gradLinha.addColorStop(0.5, '#d4af37'); gradLinha.addColorStop(1, 'rgba(212,175,55,0)');
-                ctx.strokeStyle = gradLinha; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.moveTo(400, 385); ctx.lineTo(860, 385); ctx.stroke();
+                ctx.strokeStyle = gradLinha; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(400, 385); ctx.lineTo(860, 385); ctx.stroke();
 
-                // ID do Passaporte
-                ctx.fillStyle = '#d4af37';
-                ctx.font = 'bold 22px monospace';
+                ctx.fillStyle = '#d4af37'; ctx.font = 'bold 22px monospace';
                 ctx.fillText(`ID: ${dadosSessaoCurso.id}`, 630, 420);
 
-                ctx.fillStyle = '#a0a8b5';
-                ctx.font = 'italic 18px sans-serif';
+                ctx.fillStyle = '#a0a8b5'; ctx.font = 'italic 18px sans-serif';
                 ctx.fillText("Por concluir com distinção e excepcional aproveitamento técnico o:", 630, 485);
 
-                // Nome do Curso Grande em Amarelo Real
-                ctx.fillStyle = '#f1c40f';
-                ctx.font = 'bold 36px sans-serif';
+                ctx.fillStyle = '#f1c40f'; ctx.font = 'bold 36px sans-serif';
                 ctx.fillText(cursoNome.toUpperCase(), 630, 540);
 
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '15px monospace';
+                ctx.fillStyle = '#ffffff'; ctx.font = '15px monospace';
                 ctx.fillText(`CARGO REGISTRADO: ${dadosSessaoCurso.cargoNome.toUpperCase()}`, 630, 585);
 
-                ctx.fillStyle = '#7f8c8d';
-                ctx.font = '15px sans-serif';
+                ctx.fillStyle = '#7f8c8d'; ctx.font = '15px sans-serif';
                 ctx.fillText(`EMISSÃO OFICIAL: ${dadosSessaoCurso.data}`, 630, 635);
 
-                // 6. ASSINATURAS E LINHAS DE AUTENTICAÇÃO
+                // Assinaturas
                 ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)'; ctx.lineWidth = 1;
                 ctx.beginPath(); ctx.moveTo(380, 715); ctx.lineTo(580, 715); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(680, 715); ctx.lineTo(880, 715); ctx.stroke();
 
-                // Caligrafia dos Diretores
-                ctx.fillStyle = '#fcf3cf';
-                ctx.font = 'italic 28px Georgia, serif';
+                ctx.fillStyle = '#fcf3cf'; ctx.font = 'italic 28px Georgia, serif';
                 ctx.fillText("Chefia SRT", 480, 700);
                 ctx.fillText(dadosSessaoCurso.aplicadorNomeCru, 780, 700);
 
-                ctx.fillStyle = '#a0a8b5';
-                ctx.font = 'bold 11px sans-serif';
+                ctx.fillStyle = '#a0a8b5'; ctx.font = 'bold 11px sans-serif';
                 ctx.fillText("@G.G | GERÊNCIA ADMINISTRATIVA", 480, 735);
                 ctx.fillText("@APLICADOR | INSTRUTOR DE CAMPO", 780, 735);
 
-                // Hash Único de Verificação do Documento
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-                ctx.font = '12px monospace';
-                ctx.textAlign = 'left';
-                let codVerificacao = `SRT-C-2026-${dadosSessaoCurso.id}-${Math.floor(1000 + Math.random() * 9000)}`;
-                ctx.fillText(codVerificacao, 85, 745);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'; ctx.font = '12px monospace'; ctx.textAlign = 'left';
+                ctx.fillText(`SRT-C-2026-${dadosSessaoCurso.id}-${Math.floor(1000 + Math.random() * 9000)}`, 85, 745);
 
-                // 7. COMPILAÇÃO DO BLOB E ENVIO AO DISCORD COM MENÇÃO @ID
+                // Compilação e Envio via Webhook com @ID do Discord
                 const dataUrl = canvas.toDataURL('image/png'); 
                 const blob = dataURLtoBlob(dataUrl); 
                 const formData = new FormData(); 
