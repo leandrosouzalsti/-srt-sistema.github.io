@@ -7,7 +7,8 @@ const Config = {
     webhookSolicitarCursos: "https://discord.com/api/webhooks/1516051951954038815/yZSDzdly5gFydIifV4iQ2H__Zfr1GdEUlGy1zNNVy2XDoEopCW-fDI9NN-rAaEHOStWl",
     webhookPagamentoCursos: "https://discord.com/api/webhooks/1516052149207830670/_7NAsCeGwhQHj0MyXNhATpKQ_mi4qqtPDoDiDDda1yYsnQXon2yLcV3bJ_cLMrwSfOa7",
     webhookAprovacaoCursos: "https://discord.com/api/webhooks/1516052366821163028/aC-BpI63tujf1f9fJZZyIAWAA0rnVK40VshyUVvqtNbO-oda5zKJQkIl1qMXTfr2xoGo",
-    webhookCertificadosCursos: "https://discord.com/api/webhooks/1516053416265388194/rgH5gumCh8MowKt6tDXVt1cNvsi_ZAInrOfkSUWy0KJKNvSmjOMzQOV_R_7QkykJQid-"
+    webhookCertificadosCursos: "https://discord.com/api/webhooks/1516053416265388194/rgH5gumCh8MowKt6tDXVt1cNvsi_ZAInrOfkSUWy0KJKNvSmjOMzQOV_R_7QkykJQid-",
+    webhookRankingCursos: "https://discord.com/api/webhooks/1527016931687792884/r4-QqULe-q039tf8BOMhyJyPbsEZCFrPMAhi_r__8Euctr1dII2Lye1PwJxxUKlYF0rf"
 };
 
 // TOAST NOTIFICATIONS SYSTEM

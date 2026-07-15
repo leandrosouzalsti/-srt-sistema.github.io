@@ -28,6 +28,92 @@
             display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;
         }
         .btn-retornar-etapa:hover { background: #e74c3c; color: #fff; }
+
+        /* Linha do aluno selecionado com Cargo */
+        .lista-alunos-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .aluno-linha-selecionado {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            gap: 12px;
+            animation: rowIn 0.25s ease-out;
+        }
+        @keyframes rowIn {
+            from { transform: translateY(-5px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .aluno-info {
+            flex-grow: 1;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .aluno-cargo-select {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 13px;
+            width: 140px;
+            cursor: pointer;
+        }
+        .aluno-cargo-select:focus {
+            border-color: #f1c40f;
+            outline: none;
+        }
+        .aluno-remove {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.15s;
+        }
+        .aluno-remove:hover {
+            transform: scale(1.2);
+        }
+
+        /* Indicador de progresso da fila */
+        .progresso-fila {
+            background: linear-gradient(135deg, rgba(241,196,15,0.1), rgba(241,196,15,0.05));
+            border: 1px solid #f1c40f44;
+            border-radius: 8px; padding: 12px 16px;
+            margin-bottom: 18px; text-align: center;
+        }
+        .progresso-fila .progresso-titulo {
+            font-size: 15px; font-weight: 700; color: #f1c40f;
+            margin-bottom: 8px;
+        }
+        .progresso-fila .progresso-barra-outer {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px; height: 10px; overflow: hidden;
+        }
+        .progresso-fila .progresso-barra-inner {
+            background: linear-gradient(90deg, #f1c40f, #e67e22);
+            height: 100%; border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .progresso-fila .progresso-texto {
+            font-size: 12px; color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Contador de alunos selecionados */
+        .contador-alunos {
+            font-size: 12px; color: #f1c40f; font-weight: 700;
+            margin-top: 8px; display: none;
+        }
+        .contador-alunos.visivel { display: block; }
     </style>
 </head>
 <body>
@@ -41,41 +127,23 @@
             <form id="cursosForm" onsubmit="event.preventDefault();">
                 
                 <div class="form-group">
-                    <label for="buscaAluno">👤 BUSCAR ALUNO (NOME OU ID):</label>
+                    <label for="buscaAluno">👤 BUSCAR ALUNOS (NOME OU ID):</label>
                     <div class="busca-container">
-                        <input type="text" id="buscaAluno" placeholder="Digite o nome ou passaporte para buscar..." autocomplete="off" required>
+                        <input type="text" id="buscaAluno" placeholder="Digite o nome ou passaporte para adicionar..." autocomplete="off">
                         <div id="resultadosAluno" class="lista-resultados"></div>
                     </div>
-                    <input type="hidden" id="idJogoAlunoSelecionado" required>
+                    <div id="listaAlunosSelecionados" class="lista-alunos-container"></div>
+                    <div id="contadorAlunos" class="contador-alunos"></div>
                     <small style="color: var(--text-muted); display:block; margin-top:5px;">
-                        Não achou o aluno? <a href="cadastro.html" style="color:#f1c40f; text-decoration:underline;">Clique aqui para cadastrá-lo</a>.
+                        Selecione um ou mais alunos e defina seus cargos. Não achou? <a href="cadastro.html" style="color:#f1c40f; text-decoration:underline;">Clique aqui para cadastrá-lo</a>.
                     </small>
                 </div>
 
-                <div class="form-group">
-                    <label for="cargoAlunoCur">🎓 CARGO ATUAL DO ALUNO:</label>
-                    <select id="cargoAlunoCur" required>
-                        <option value="Aprendiz">Aprendiz</option>
-                        <option value="Mecanico">Mecanico</option>
-                        <option value="Recrutador">Recrutador</option>
-                        <option value="Sub Gerente">Sub Gerente</option>
-                        <option value="Gerente">Gerente</option>
-                        <option value="Gerente Geral">Gerente Geral</option>
-                        <option value="Chefe 02">Chefe 02</option>
-                        <option value="Chefe 01">Chefe 01</option>
-                        <option value="Dono 00">Dono 00</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>📖 CURSOS DESEJADOS:</label>
-                    <div id="lista-cursos-container"></div>
-                    <button type="button" onclick="adicionarNovoCursoField()" style="margin-top: 12px; background-color: var(--success-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px;">➕ Adicionar Outro Curso</button>
-                </div>
                 <button type="submit" class="btn-submit" style="background-color: #f1c40f; color: #000;">Passo 1: Enviar Solicitação</button>
             </form>
 
             <div id="area-pendencia-pagamento" class="bloco-etapa-curso" style="display: none; border-color: var(--info-color);">
+                <div id="progresso-passo2" class="progresso-fila"></div>
                 <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso1()">↩️ Voltar ao Passo 1 (Editar Cursos/Aluno)</button>
                 <h3 style="color: var(--info-color); margin-top: 0;">💰 Passo 2: Pendência de Pagamento</h3>
                 <div id="dados-da-pendencia" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--info-color); line-height: 1.5;"></div>
@@ -97,6 +165,7 @@
             </div>
 
             <div id="area-aprovacao-curso" class="bloco-etapa-curso" style="display: none; border-color: var(--success-color);">
+                <div id="progresso-passo3" class="progresso-fila"></div>
                 <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso2()">↩️ Voltar ao Passo 2 (Mudar Aplicador)</button>
                 <h3 style="color: var(--success-color); margin-top: 0;">🥇 Passo 3: Homologação do Curso</h3>
                 <div id="dados-da-aprovacao" style="font-size: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid var(--success-color); line-height: 1.5;"></div>
@@ -107,6 +176,7 @@
             </div>
 
             <div id="area-gerar-certificado" class="bloco-etapa-curso" style="display: none; border-color: var(--purple-color);">
+                <div id="progresso-passo4" class="progresso-fila"></div>
                 <button type="button" class="btn-retornar-etapa" onclick="voltarParaPasso3()">↩️ Voltar ao Passo 3 (Homologação)</button>
                 <h3 style="color: var(--purple-color); margin-top: 0;">📜 Passo 4: Conclusão e Certificado</h3>
                 <form id="formGerarCertificado" onsubmit="event.preventDefault();">
@@ -133,14 +203,22 @@
         };
 
         const opcoesCursos = Object.keys(tabelaCursosCompleta);
-        let dadosSessaoCurso = null;
+        
+        // === ESTADO GLOBAL DO LOTE ===
+        let filaAlunos = [];         // Array de objetos dadosSessaoCurso (um por aluno)
+        let indiceAlunoAtual = 0;    // Índice do aluno sendo processado
+        let alunosSelecionados = []; // Alunos selecionados no Passo 1 (chips)
+        let aplicadorLote = null;    // Aplicador compartilhado para todo o lote
         let listaMembrosGlobais = [];
+        let totalCursosLote = 0;     // Total de cursos no lote (para ranking)
 
         function carregarMembros() {
             listaMembrosGlobais = JSON.parse(localStorage.getItem('srt_membros')) || [];
         }
 
-        /* FUNÇÕES DE NAVEGAÇÃO RETRÔ */
+        /* =============================================
+           FUNÇÕES DE NAVEGAÇÃO ENTRE PASSOS
+           ============================================= */
         function voltarParaPasso1() {
             document.getElementById('area-pendencia-pagamento').style.display = 'none';
             document.getElementById('cursosForm').style.display = 'block';
@@ -156,9 +234,12 @@
             document.getElementById('area-aprovacao-curso').style.display = 'block';
         }
 
-        function configurarFiltroBusca(idInputTexto, idInputHidden, idContainerResultados) {
+        /* =============================================
+           BUSCA INTELIGENTE DE MEMBROS
+           ============================================= */
+        function configurarFiltroBusca(idInputTexto, idInputHidden, idContainerResultados, modoChip) {
             const inputTexto = document.getElementById(idInputTexto);
-            const inputHidden = document.getElementById(idInputHidden);
+            const inputHidden = idInputHidden ? document.getElementById(idInputHidden) : null;
             const containerResultados = document.getElementById(idContainerResultados);
 
             inputTexto.addEventListener('input', function() {
@@ -170,9 +251,15 @@
                     return;
                 }
 
-                const filtrados = listaMembrosGlobais.filter(m => 
+                let filtrados = listaMembrosGlobais.filter(m => 
                     m.nome.toLowerCase().includes(termo) || m.idJogo.toString().includes(termo)
                 );
+
+                // No modo chip, excluir alunos já selecionados
+                if (modoChip) {
+                    const idsJaSelecionados = alunosSelecionados.map(a => a.idJogo);
+                    filtrados = filtrados.filter(m => !idsJaSelecionados.includes(m.idJogo));
+                }
 
                 if (filtrados.length === 0) {
                     containerResultados.innerHTML = `<div class="resultado-item" style="color:var(--text-muted); cursor:default;">Nenhum membro encontrado</div>`;
@@ -185,8 +272,13 @@
                     div.className = 'resultado-item';
                     div.textContent = `${membro.nome} (ID: ${membro.idJogo})`;
                     div.addEventListener('click', function() {
-                        inputTexto.value = `${membro.nome} (ID: ${membro.idJogo})`;
-                        inputHidden.value = membro.idJogo;
+                        if (modoChip) {
+                            adicionarAlunoChip(membro);
+                            inputTexto.value = '';
+                        } else {
+                            inputTexto.value = `${membro.nome} (ID: ${membro.idJogo})`;
+                            if (inputHidden) inputHidden.value = membro.idJogo;
+                        }
                         containerResultados.style.display = 'none';
                     });
                     containerResultados.appendChild(div);
@@ -202,6 +294,160 @@
             });
         }
 
+        /* =============================================
+           SISTEMA DE CHIPS (MULTI-SELEÇÃO DE ALUNOS)
+           ============================================= */
+        function adicionarAlunoChip(membro) {
+            // Evitar duplicatas
+            if (alunosSelecionados.find(a => a.idJogo === membro.idJogo)) return;
+            
+            membro.cargo = "Mecanico";
+            membro.cursos = [opcoesCursos[0]]; // Inicializa com o primeiro curso
+            alunosSelecionados.push(membro);
+            renderizarListaAlunos();
+        }
+
+        function removerAlunoChip(idJogo) {
+            alunosSelecionados = alunosSelecionados.filter(a => a.idJogo !== idJogo);
+            renderizarListaAlunos();
+        }
+
+        function atualizarCargoAluno(idJogo, novoCargo) {
+            const aluno = alunosSelecionados.find(a => a.idJogo === idJogo);
+            if (aluno) {
+                aluno.cargo = novoCargo;
+            }
+        }
+
+        function atualizarCursoAluno(idJogo, indexCurso, novoCurso) {
+            const aluno = alunosSelecionados.find(a => a.idJogo === idJogo);
+            if (aluno && aluno.cursos) {
+                aluno.cursos[indexCurso] = novoCurso;
+            }
+        }
+
+        function removerCursoAluno(idJogo, indexCurso) {
+            const aluno = alunosSelecionados.find(a => a.idJogo === idJogo);
+            if (aluno && aluno.cursos) {
+                aluno.cursos.splice(indexCurso, 1);
+                renderizarListaAlunos();
+            }
+        }
+
+        function adicionarCursoAluno(idJogo) {
+            const aluno = alunosSelecionados.find(a => a.idJogo === idJogo);
+            if (aluno) {
+                aluno.cursos = aluno.cursos || [];
+                const disponiveis = opcoesCursos.filter(c => !aluno.cursos.includes(c));
+                if (disponiveis.length > 0) {
+                    aluno.cursos.push(disponiveis[0]);
+                } else {
+                    aluno.cursos.push(opcoesCursos[0]);
+                }
+                renderizarListaAlunos();
+            }
+        }
+
+        function renderizarListaAlunos() {
+            const container = document.getElementById('listaAlunosSelecionados');
+            const contador = document.getElementById('contadorAlunos');
+            container.innerHTML = '';
+
+            alunosSelecionados.forEach(aluno => {
+                aluno.cursos = aluno.cursos || [opcoesCursos[0]];
+
+                let optionsCargo = "";
+                const cargosList = ["Aprendiz", "Mecanico", "Recrutador", "Sub Gerente", "Gerente", "Gerente Geral", "Chefe 02", "Chefe 01", "Dono 00"];
+                cargosList.forEach(cg => {
+                    optionsCargo += `<option value="${cg}" ${aluno.cargo === cg ? 'selected' : ''}>${cg}</option>`;
+                });
+
+                let coursesHTML = "";
+                aluno.cursos.forEach((cursoAtual, idx) => {
+                    let selectCursoHTML = `<select class="aluno-curso-select" style="background: #1a1a1a; color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 4px 8px; font-size: 13px; flex-grow: 1; cursor: pointer;" onchange="atualizarCursoAluno('${aluno.idJogo}', ${idx}, this.value)">`;
+                    opcoesCursos.forEach(opt => {
+                        selectCursoHTML += `<option value="${opt}" ${opt === cursoAtual ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    selectCursoHTML += `</select>`;
+
+                    let deleteBtn = `<button type="button" onclick="removerCursoAluno('${aluno.idJogo}', ${idx})" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px;" title="Remover Curso">❌</button>`;
+
+                    coursesHTML += `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${selectCursoHTML}
+                            ${deleteBtn}
+                        </div>
+                    `;
+                });
+
+                const row = document.createElement('div');
+                row.className = 'aluno-linha-selecionado';
+                row.style.flexDirection = 'column';
+                row.style.alignItems = 'stretch';
+                row.style.background = 'rgba(255, 255, 255, 0.05)';
+                row.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                row.style.padding = '12px';
+                row.style.borderRadius = '8px';
+                row.style.gap = '8px';
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div class="aluno-info" style="font-weight: bold; color: #fff;">👤 ${aluno.nome} (ID: ${aluno.idJogo})</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <select class="aluno-cargo-select" onchange="atualizarCargoAluno('${aluno.idJogo}', this.value)">
+                                ${optionsCargo}
+                            </select>
+                            <button type="button" class="aluno-remove" onclick="removerAlunoChip('${aluno.idJogo}')" title="Remover Aluno">❌</button>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 8px; margin-top: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 12px; font-weight: bold; color: #a0a8b5;">📖 CURSOS DO ALUNO:</span>
+                            <button type="button" onclick="adicionarCursoAluno('${aluno.idJogo}')" style="background-color: #2ecc71; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;">➕ Adicionar Curso</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            ${coursesHTML}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            if (alunosSelecionados.length > 0) {
+                contador.textContent = `✅ ${alunosSelecionados.length} aluno(s) selecionado(s)`;
+                contador.classList.add('visivel');
+            } else {
+                contador.classList.remove('visivel');
+            }
+        }
+
+        /* =============================================
+           INDICADOR DE PROGRESSO DA FILA
+           ============================================= */
+        function atualizarProgresso(idContainer) {
+            const container = document.getElementById(idContainer);
+            if (!container || filaAlunos.length <= 1) {
+                if (container) container.style.display = 'none';
+                return;
+            }
+
+            const atual = indiceAlunoAtual + 1;
+            const total = filaAlunos.length;
+            const pct = Math.round((atual / total) * 100);
+            const alunoAtual = filaAlunos[indiceAlunoAtual];
+
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="progresso-titulo">👥 Processando: ${alunoAtual.nomeCru}</div>
+                <div class="progresso-barra-outer">
+                    <div class="progresso-barra-inner" style="width: ${pct}%"></div>
+                </div>
+                <div class="progresso-texto">Aluno ${atual} de ${total} • ${pct}% concluído</div>
+            `;
+        }
+
+        /* =============================================
+           UTILITÁRIOS
+           ============================================= */
         function obterSiglaCargo(cargo) {
             const c = cargo.toLowerCase().trim();
             if (c.includes("aprendiz")) return "@APZ";
@@ -216,125 +462,161 @@
             return "";
         }
 
-        function inicializarPrimeiroCurso() {
-            const container = document.getElementById('lista-cursos-container'); 
-            container.innerHTML = "";
-            const primeiraLinha = document.createElement('div'); 
-            primeiraLinha.className = 'curso-linha';
-            let selectHTML = `<select class="select-curso" required>`;
-            opcoesCursos.forEach(opt => { selectHTML += `<option value="${opt}">${opt}</option>`; });
-            selectHTML += `</select>`; 
-            primeiraLinha.innerHTML = selectHTML; 
-            container.appendChild(primeiraLinha);
-        }
-
-        function adicionarNovoCursoField() {
-            const container = document.getElementById('lista-cursos-container'); 
-            const selectsAtuais = document.getElementsByClassName('select-curso');
-            const cursosEscolhidos = []; 
-            for(let i = 0; i < selectsAtuais.length; i++) { 
-                cursosEscolhidos.push(selectsAtuais[i].value); 
-            }
-            const cursosDisponiveis = opcoesCursos.filter(curso => !cursosEscolhidos.includes(curso));
-            if (cursosDisponiveis.length === 0) return;
-            
-            const novaLinha = document.createElement('div'); 
-            novaLinha.className = 'curso-linha';
-            let selectHTML = `<select class="select-curso" required>`;
-            cursosDisponiveis.forEach(opt => { selectHTML += `<option value="${opt}">${opt}</option>`; });
-            selectHTML += `</select><button type="button" class="btn-remover" onclick="this.parentElement.remove();">❌</button>`;
-            novaLinha.innerHTML = selectHTML; 
-            container.appendChild(novaLinha);
-        }
-
+        /* =============================================
+           INICIALIZAÇÃO
+           ============================================= */
         window.addEventListener('DOMContentLoaded', () => {
             carregarMembros();
-            configurarFiltroBusca('buscaAluno', 'idJogoAlunoSelecionado', 'resultadosAluno');
-            configurarFiltroBusca('buscaAplicador', 'idJogoAplicadorSelecionado', 'resultadosAplicador');
-            inicializarPrimeiroCurso();
+            // Busca de aluno em modo CHIP (multi-seleção)
+            configurarFiltroBusca('buscaAluno', null, 'resultadosAluno', true);
+            // Busca de aplicador em modo normal (seleção única)
+            configurarFiltroBusca('buscaAplicador', 'idJogoAplicadorSelecionado', 'resultadosAplicador', false);
         });
 
-        // STEP 1 SUBMIT
+        /* =============================================
+           PASSO 1: ENVIAR SOLICITAÇÃO (LOTE)
+           ============================================= */
         document.getElementById('cursosForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const idJogoSelecionado = document.getElementById('idJogoAlunoSelecionado').value;
-            const alunoObjeto = listaMembrosGlobais.find(m => m.idJogo === idJogoSelecionado);
-            
-            if(!alunoObjeto) {
-                alert("Por favor, selecione um aluno válido clicando no resultado da busca.");
+
+            // Validar que há alunos selecionados
+            if (alunosSelecionados.length === 0) {
+                alert("Por favor, selecione pelo menos um aluno clicando nos resultados da busca.");
                 return;
             }
 
-            const tagCargo = document.getElementById('cargoAlunoCur').value; 
-            const selects = document.getElementsByClassName('select-curso'); 
-            
-            let listaCursosFormatada = ""; 
-            let listaCursosMencoes = "";
-            let listaCursosArray = []; 
-            let somaTotalRepasse = 0;
-            
-            for (let i = 0; i < selects.length; i++) {
-                let cursoSelecionado = selects[i].value; 
-                let infoCurso = tabelaCursosCompleta[cursoSelecionado];
-                
-                listaCursosArray.push(cursoSelecionado);
-                listaCursosFormatada += `• ${cursoSelecionado}\n`;
-                listaCursosMencoes += `• <@&${infoCurso.idCargo}>\n`;
-                
-                if(infoCurso) somaTotalRepasse += infoCurso.valor;
+            // Validar se todos os alunos têm pelo menos um curso
+            const alunoSemCurso = alunosSelecionados.find(a => !a.cursos || a.cursos.length === 0);
+            if (alunoSemCurso) {
+                alert(`Por favor, adicione pelo menos um curso para o aluno ${alunoSemCurso.nome}.`);
+                return;
             }
-            const dataFicha = new Date().toLocaleDateString('pt-BR');
-            
-            const siglaAtual = obterSiglaCargo(tagCargo);
-            const mascaraTextoCompleta = `${siglaAtual} | ${alunoObjeto.nome} ${alunoObjeto.idJogo}`;
-            const mencaoClicavelMembro = `<@${alunoObjeto.idDiscord}>`;
 
-            dadosSessaoCurso = { 
-                id: alunoObjeto.idJogo, 
-                nomeCru: alunoObjeto.nome, 
-                idDiscord: alunoObjeto.idDiscord,
-                cargoNome: tagCargo,
-                data: dataFicha, 
-                cursosTexto: listaCursosFormatada,
-                cursosMencoes: listaCursosMencoes,
-                cursosLista: listaCursosArray, 
-                nomeCompleto: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, 
-                valorTotalRepasse: `${somaTotalRepasse}kk`, 
-                aplicador: "",
-                aplicadorNomeCru: ""
-            }; 
-            
-            const dadosSolicitacao = { 
-                embeds: [{ 
-                    title: "🎓 Nova Solicitação de Cursos", 
-                    color: 15158332, 
-                    fields: [
-                        { name: "👤 Nome do Cursando", value: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, inline: false }, 
-                        { name: "🆔 ID Passaporte", value: `${alunoObjeto.idJogo}`, inline: true }, 
-                        { name: "📅 Data de Envio", value: `${dataFicha}`, inline: true }, 
-                        { name: "📖 Cursos Solicitados", value: `${listaCursosMencoes}`, inline: false }
-                    ], 
-                    timestamp: new Date().toISOString() 
-                }] 
-            };
-            
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", Config.webhookSolicitarCursos, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-                    document.getElementById('dados-da-pendencia').innerHTML = `<strong>🆔 ID Jogo:</strong> ${dadosSessaoCurso.id}<br><strong>📅 Data:</strong> ${dadosSessaoCurso.data}<br><strong>📖 Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}<hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;"><strong>💰 REPASSE TOTAL:</strong> <span class="destaque-valor">${dadosSessaoCurso.valorTotalRepasse}</span>`; 
-                    document.getElementById('cursosForm').style.display = 'none'; 
-                    document.getElementById('area-pendencia-pagamento').style.display = 'block'; 
-                }
-            };
-            xhr.send(JSON.stringify(dadosSolicitacao));
+            const dataFicha = new Date().toLocaleDateString('pt-BR');
+
+            // Montar a fila de alunos
+            filaAlunos = [];
+            indiceAlunoAtual = 0;
+            aplicadorLote = null;
+            totalCursosLote = 0;
+
+            alunosSelecionados.forEach(alunoObjeto => {
+                const tagCargo = alunoObjeto.cargo || "Mecanico";
+                const siglaAtual = obterSiglaCargo(tagCargo);
+                const mascaraTextoCompleta = `${siglaAtual} | ${alunoObjeto.nome} ${alunoObjeto.idJogo}`;
+                const mencaoClicavelMembro = `<@${alunoObjeto.idDiscord}>`;
+
+                const cursosDoAluno = alunoObjeto.cursos || [];
+                let studentCursosTexto = "";
+                let studentCursosMencoes = "";
+                let studentCursosArray = [];
+                let studentSomaTotalRepasse = 0;
+
+                cursosDoAluno.forEach(cursoSelecionado => {
+                    let infoCurso = tabelaCursosCompleta[cursoSelecionado];
+                    if (infoCurso) {
+                        studentCursosArray.push(cursoSelecionado);
+                        studentCursosTexto += `• ${cursoSelecionado}\n`;
+                        studentCursosMencoes += `• <@&${infoCurso.idCargo}>\n`;
+                        studentSomaTotalRepasse += infoCurso.valor;
+                    }
+                });
+
+                totalCursosLote += studentCursosArray.length;
+
+                filaAlunos.push({ 
+                    id: alunoObjeto.idJogo, 
+                    nomeCru: alunoObjeto.nome, 
+                    idDiscord: alunoObjeto.idDiscord,
+                    cargoNome: tagCargo,
+                    data: dataFicha, 
+                    cursosTexto: studentCursosTexto,
+                    cursosMencoes: studentCursosMencoes,
+                    cursosLista: studentCursosArray, 
+                    nomeCompleto: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, 
+                    valorTotalRepasse: `${studentSomaTotalRepasse}kk`, 
+                    aplicador: "",
+                    aplicadorNomeCru: ""
+                });
+            });
+
+            // Enviar webhooks de solicitação para TODOS os alunos
+            let enviosCompletos = 0;
+            const totalEnvios = filaAlunos.length;
+
+            filaAlunos.forEach((dados, idx) => {
+                const aluno = alunosSelecionados[idx];
+                const tagCargo = aluno.cargo || "Mecanico";
+                const siglaAtual = obterSiglaCargo(tagCargo);
+                const mascaraTextoCompleta = `${siglaAtual} | ${aluno.nome} ${aluno.idJogo}`;
+                const mencaoClicavelMembro = `<@${aluno.idDiscord}>`;
+
+                const dadosSolicitacao = { 
+                    embeds: [{ 
+                        title: "🎓 Nova Solicitação de Cursos", 
+                        color: 15158332, 
+                        fields: [
+                            { name: "👤 Nome do Cursando", value: `**${mascaraTextoCompleta}** ${mencaoClicavelMembro}`, inline: false }, 
+                            { name: "🆔 ID Passaporte", value: `${aluno.idJogo}`, inline: true }, 
+                            { name: "📅 Data de Envio", value: `${dataFicha}`, inline: true }, 
+                            { name: "📖 Cursos Solicitados", value: `${dados.cursosMencoes}`, inline: false }
+                        ], 
+                        timestamp: new Date().toISOString() 
+                    }] 
+                };
+                
+                // Delay para evitar rate limit do Discord (1 segundo entre cada)
+                setTimeout(() => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", Config.webhookSolicitarCursos, true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            enviosCompletos++;
+                            if (enviosCompletos === totalEnvios) {
+                                // Todos enviados, avançar para Passo 2 com o primeiro aluno
+                                mostrarPasso2();
+                            }
+                        }
+                    };
+                    xhr.send(JSON.stringify(dadosSolicitacao));
+                }, idx * 1000);
+            });
         });
 
-        // STEP 2 SUBMIT
+        /* =============================================
+           PASSO 2: PAGAMENTO (INDIVIDUAL POR ALUNO)
+           ============================================= */
+        function mostrarPasso2() {
+            const dadosAtual = filaAlunos[indiceAlunoAtual];
+            
+            document.getElementById('dados-da-pendencia').innerHTML = `
+                <strong>🆔 ID Jogo:</strong> ${dadosAtual.id}<br>
+                <strong>👤 Aluno:</strong> ${dadosAtual.nomeCru}<br>
+                <strong>📅 Data:</strong> ${dadosAtual.data}<br>
+                <strong>📖 Cursos:</strong><br>${dadosAtual.cursosTexto.replace(/\n/g, '<br>')}
+                <hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;">
+                <strong>💰 REPASSE TOTAL:</strong> <span class="destaque-valor">${dadosAtual.valorTotalRepasse}</span>
+            `;
+            
+            // Se o aplicador já foi selecionado (para alunos subsequentes), preencher automaticamente
+            if (aplicadorLote) {
+                document.getElementById('buscaAplicador').value = `${aplicadorLote.nome} (ID: ${aplicadorLote.idJogo})`;
+                document.getElementById('idJogoAplicadorSelecionado').value = aplicadorLote.idJogo;
+            }
+
+            document.getElementById('cursosForm').style.display = 'none';
+            document.getElementById('area-aprovacao-curso').style.display = 'none';
+            document.getElementById('area-gerar-certificado').style.display = 'none';
+            document.getElementById('area-pendencia-pagamento').style.display = 'block';
+            
+            atualizarProgresso('progresso-passo2');
+        }
+
         document.getElementById('formConfirmarPagamento').addEventListener('submit', function(event) {
             event.preventDefault(); 
-            if(!dadosSessaoCurso) return; 
+            const dadosAtual = filaAlunos[indiceAlunoAtual];
+            if(!dadosAtual) return; 
             
             const idAplicadorSelecionado = document.getElementById('idJogoAplicadorSelecionado').value;
             const aplicadorObjeto = listaMembrosGlobais.find(m => m.idJogo === idAplicadorSelecionado);
@@ -344,8 +626,12 @@
                 return;
             }
             
-            dadosSessaoCurso.aplicador = `<@${aplicadorObjeto.idDiscord}>`;
-            dadosSessaoCurso.aplicadorNomeCru = aplicadorObjeto.nome;
+            // Salvar aplicador para todo o lote
+            aplicadorLote = aplicadorObjeto;
+            
+            // Aplicar aplicador ao aluno atual
+            dadosAtual.aplicador = `<@${aplicadorObjeto.idDiscord}>`;
+            dadosAtual.aplicadorNomeCru = aplicadorObjeto.nome;
             
             const dadosPagamento = { 
                 embeds: [{ 
@@ -353,10 +639,10 @@
                     description: "✅ **PAGAMENTO CONFIRMADO**", 
                     color: 3066993, 
                     fields: [
-                        { name: "👤 Aluno", value: `${dadosSessaoCurso.nomeCompleto}`, inline: false }, 
-                        { name: "👨‍🏫 Aplicador", value: `${dadosSessaoCurso.aplicador}`, inline: true }, 
-                        { name: "💰 Total Repassado", value: `**${dadosSessaoCurso.valorTotalRepasse}**`, inline: true }, 
-                        { name: "📖 Cursos", value: `${dadosSessaoCurso.cursosMencoes}`, inline: false }
+                        { name: "👤 Aluno", value: `${dadosAtual.nomeCompleto}`, inline: false }, 
+                        { name: "👨‍🏫 Aplicador", value: `${dadosAtual.aplicador}`, inline: true }, 
+                        { name: "💰 Total Repassado", value: `**${dadosAtual.valorTotalRepasse}**`, inline: true }, 
+                        { name: "📖 Cursos", value: `${dadosAtual.cursosMencoes}`, inline: false }
                     ], 
                     timestamp: new Date().toISOString() 
                 }] 
@@ -367,27 +653,44 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-                    document.getElementById('dados-da-aprovacao').innerHTML = `<strong>Nome:</strong> ${dadosSessaoCurso.nomeCompleto}<br><strong>Aplicador:</strong> ${dadosSessaoCurso.aplicador}<br><strong>Cursos:</strong><br>${dadosSessaoCurso.cursosTexto.replace(/\n/g, '<br>')}`; 
-                    document.getElementById('area-pendencia-pagamento').style.display = 'none'; 
-                    document.getElementById('area-aprovacao-curso').style.display = 'block'; 
+                    mostrarPasso3();
                 }
             };
             xhr.send(JSON.stringify(dadosPagamento));
         });
 
-        // STEP 3 SUBMIT
+        /* =============================================
+           PASSO 3: HOMOLOGAÇÃO (INDIVIDUAL + RANKING)
+           ============================================= */
+        function mostrarPasso3() {
+            const dadosAtual = filaAlunos[indiceAlunoAtual];
+            
+            document.getElementById('dados-da-aprovacao').innerHTML = `
+                <strong>Nome:</strong> ${dadosAtual.nomeCompleto}<br>
+                <strong>Aplicador:</strong> ${dadosAtual.aplicador}<br>
+                <strong>Cursos:</strong><br>${dadosAtual.cursosTexto.replace(/\n/g, '<br>')}
+            `;
+            
+            document.getElementById('area-pendencia-pagamento').style.display = 'none';
+            document.getElementById('area-gerar-certificado').style.display = 'none';
+            document.getElementById('area-aprovacao-curso').style.display = 'block';
+            
+            atualizarProgresso('progresso-passo3');
+        }
+
         document.getElementById('formConfirmarAprovacao').addEventListener('submit', function(event) {
             event.preventDefault(); 
-            if(!dadosSessaoCurso) return;
+            const dadosAtual = filaAlunos[indiceAlunoAtual];
+            if(!dadosAtual) return;
             
             const dadosAprovacao = { 
                 embeds: [{ 
                     title: "🥇 Nova Aprovação de Curso Registrada", 
                     color: 15158332, 
                     fields: [
-                        { name: "👤 Nome", value: `${dadosSessaoCurso.nomeCompleto}`, inline: false }, 
-                        { name: "👨‍🏫 Aplicador", value: `${dadosSessaoCurso.aplicador}`, inline: false }, 
-                        { name: "📚 Cursos Concluídos", value: `${dadosSessaoCurso.cursosMencoes}`, inline: false }
+                        { name: "👤 Nome", value: `${dadosAtual.nomeCompleto}`, inline: false }, 
+                        { name: "👨‍🏫 Aplicador", value: `${dadosAtual.aplicador}`, inline: false }, 
+                        { name: "📚 Cursos Concluídos", value: `${dadosAtual.cursosMencoes}`, inline: false }
                     ], 
                     timestamp: new Date().toISOString() 
                 }] 
@@ -398,29 +701,69 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-                    document.getElementById('area-aprovacao-curso').style.display = 'none'; 
-                    document.getElementById('area-gerar-certificado').style.display = 'block'; 
+                    // Verificar se é o último aluno para enviar webhook de ranking
+                    if (indiceAlunoAtual === filaAlunos.length - 1) {
+                        enviarWebhookRanking();
+                    }
+                    mostrarPasso4();
                 }
             };
             xhr.send(JSON.stringify(dadosAprovacao));
         });
 
-        // STEP 4 SUBMIT (CANVAS HIGH QUALITY)
+        /* =============================================
+           WEBHOOK DE RANKING (ENVIADO UMA VEZ NO FIM)
+           ============================================= */
+        function enviarWebhookRanking() {
+            if (!aplicadorLote) return;
+
+            const dadosRanking = {
+                embeds: [{
+                    title: "🏆 Registro de Ranking de Aplicadores",
+                    description: "Registro de cursos concluídos para atualização do ranking.",
+                    color: 16766720, // Dourado
+                    fields: [
+                        { name: "👤 Aplicador (Discord)", value: `<@${aplicadorLote.idDiscord}>`, inline: true },
+                        { name: "📝 Nome do Cadastro", value: `${aplicadorLote.nome}`, inline: true },
+                        { name: "📚 Cursos Aplicados", value: `**${totalCursosLote}**`, inline: true }
+                    ],
+                    footer: { text: "SRT Motors • Controle de Ranking" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", Config.webhookRankingCursos, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(dadosRanking));
+        }
+
+        /* =============================================
+           PASSO 4: CERTIFICADO (INDIVIDUAL + FILA)
+           ============================================= */
+        function mostrarPasso4() {
+            document.getElementById('area-aprovacao-curso').style.display = 'none';
+            document.getElementById('area-gerar-certificado').style.display = 'block';
+            atualizarProgresso('progresso-passo4');
+        }
+
         document.getElementById('formGerarCertificado').addEventListener('submit', function(event) {
             event.preventDefault(); 
-            if(!dadosSessaoCurso) return; 
+            const dadosAtual = filaAlunos[indiceAlunoAtual];
+            if(!dadosAtual) return; 
+            
             const canvas = document.getElementById('canvasCertificado'); 
             const ctx = canvas.getContext('2d'); 
             let index = 0;
 
             function enviarProximoCertificado() {
-                if (index >= dadosSessaoCurso.cursosLista.length) {
-                    alert('Todos os certificados premium foram enviados com sucesso!');
-                    window.location.href = "../index.html";
+                if (index >= dadosAtual.cursosLista.length) {
+                    // Certificados do aluno atual todos enviados
+                    avancarParaProximoAluno();
                     return;
                 }
 
-                let cursoNome = dadosSessaoCurso.cursosLista[index];
+                let cursoNome = dadosAtual.cursosLista[index];
 
                 // Fundo Charcoal Carbono Gradiente
                 let gradFundo = ctx.createRadialGradient(600, 400, 50, 600, 400, 750);
@@ -504,14 +847,14 @@
                 ctx.fillText("Este certificado é solenemente conferido a:", 630, 275);
 
                 ctx.fillStyle = '#ffffff'; ctx.font = 'italic bold 64px Georgia, serif';
-                ctx.fillText(dadosSessaoCurso.nomeCru, 630, 360);
+                ctx.fillText(dadosAtual.nomeCru, 630, 360);
 
                 let gradLinha = ctx.createLinearGradient(400, 0, 860, 0);
                 gradLinha.addColorStop(0, 'rgba(212,175,55,0)'); gradLinha.addColorStop(0.5, '#d4af37'); gradLinha.addColorStop(1, 'rgba(212,175,55,0)');
                 ctx.strokeStyle = gradLinha; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(400, 385); ctx.lineTo(860, 385); ctx.stroke();
 
                 ctx.fillStyle = '#d4af37'; ctx.font = 'bold 22px monospace';
-                ctx.fillText(`ID: ${dadosSessaoCurso.id}`, 630, 420);
+                ctx.fillText(`ID: ${dadosAtual.id}`, 630, 420);
 
                 ctx.fillStyle = '#a0a8b5'; ctx.font = 'italic 18px sans-serif';
                 ctx.fillText("Por concluir com distinção e excepcional aproveitamento técnico o:", 630, 485);
@@ -520,10 +863,10 @@
                 ctx.fillText(cursoNome.toUpperCase(), 630, 540);
 
                 ctx.fillStyle = '#ffffff'; ctx.font = '15px monospace';
-                ctx.fillText(`CARGO REGISTRADO: ${dadosSessaoCurso.cargoNome.toUpperCase()}`, 630, 585);
+                ctx.fillText(`CARGO REGISTRADO: ${dadosAtual.cargoNome.toUpperCase()}`, 630, 585);
 
                 ctx.fillStyle = '#7f8c8d'; ctx.font = '15px sans-serif';
-                ctx.fillText(`EMISSÃO OFICIAL: ${dadosSessaoCurso.data}`, 630, 635);
+                ctx.fillText(`EMISSÃO OFICIAL: ${dadosAtual.data}`, 630, 635);
 
                 // Assinaturas
                 ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)'; ctx.lineWidth = 1;
@@ -532,23 +875,23 @@
 
                 ctx.fillStyle = '#fcf3cf'; ctx.font = 'italic 28px Georgia, serif';
                 ctx.fillText("Chefia SRT", 480, 700);
-                ctx.fillText(dadosSessaoCurso.aplicadorNomeCru, 780, 700);
+                ctx.fillText(dadosAtual.aplicadorNomeCru, 780, 700);
 
                 ctx.fillStyle = '#a0a8b5'; ctx.font = 'bold 11px sans-serif';
                 ctx.fillText("@G.G | GERÊNCIA ADMINISTRATIVA", 480, 735);
                 ctx.fillText("@APLICADOR | INSTRUTOR DE CAMPO", 780, 735);
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'; ctx.font = '12px monospace'; ctx.textAlign = 'left';
-                ctx.fillText(`SRT-C-2026-${dadosSessaoCurso.id}-${Math.floor(1000 + Math.random() * 9000)}`, 85, 745);
+                ctx.fillText(`SRT-C-2026-${dadosAtual.id}-${Math.floor(1000 + Math.random() * 9000)}`, 85, 745);
 
                 // Compilação e Envio via Webhook com @ID do Discord
                 const dataUrl = canvas.toDataURL('image/png'); 
                 const blob = dataURLtoBlob(dataUrl); 
                 const formData = new FormData(); 
-                formData.append('file', blob, `Certificado_${dadosSessaoCurso.id}.png`); 
+                formData.append('file', blob, `Certificado_${dadosAtual.id}.png`); 
                 
                 const payloadJson = {
-                    content: `📜 **NOVO CERTIFICADO PREMIUM EXPEDIDO**\n👤 **Aluno:** <@${dadosSessaoCurso.idDiscord}> (ID: ${dadosSessaoCurso.id})\n📖 **Curso Concluído:** **${cursoNome}**\n👨‍🏫 **Instrutor Responsável:** ${dadosSessaoCurso.aplicador}`
+                    content: `📜 **NOVO CERTIFICADO PREMIUM EXPEDIDO**\n👤 **Aluno:** <@${dadosAtual.idDiscord}> (ID: ${dadosAtual.id})\n📖 **Curso Concluído:** **${cursoNome}**\n👨‍🏫 **Instrutor Responsável:** ${dadosAtual.aplicador}`
                 };
                 formData.append('payload_json', JSON.stringify(payloadJson)); 
                 
@@ -565,6 +908,34 @@
             enviarProximoCertificado();
         });
 
+        /* =============================================
+           AVANÇO NA FILA DE ALUNOS
+           ============================================= */
+        function avancarParaProximoAluno() {
+            indiceAlunoAtual++;
+
+            if (indiceAlunoAtual < filaAlunos.length) {
+                // Há mais alunos na fila → voltar ao Passo 2
+                showToast(`✅ Certificados do aluno ${indiceAlunoAtual} enviados! Processando próximo aluno...`, 'success');
+                
+                // Preencher aplicador automaticamente para o próximo aluno
+                if (aplicadorLote) {
+                    filaAlunos[indiceAlunoAtual].aplicador = `<@${aplicadorLote.idDiscord}>`;
+                    filaAlunos[indiceAlunoAtual].aplicadorNomeCru = aplicadorLote.nome;
+                }
+                
+                mostrarPasso2();
+            } else {
+                // Todos os alunos processados → Conclusão
+                const totalAlunos = filaAlunos.length;
+                alert(`🎉 Todos os ${totalAlunos} aluno(s) foram processados com sucesso!\n📊 Total de ${totalCursosLote} curso(s) aplicados.\n\nDados enviados para o ranking de instrutores!`);
+                window.location.href = "../index.html";
+            }
+        }
+
+        /* =============================================
+           UTILITÁRIO CANVAS → BLOB
+           ============================================= */
         function dataURLtoBlob(dataurl) { 
             var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n); 
             while(n--){ u8arr[n] = bstr.charCodeAt(n); } return new Blob([u8arr], {type:mime}); 
