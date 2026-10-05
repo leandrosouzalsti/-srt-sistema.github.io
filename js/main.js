@@ -4,10 +4,10 @@ const Config = {
     webhookPromocao: "https://discord.com/api/webhooks/1514980310318583858/EL1p2zU7xPPWSoiArBOLD-MBRBnjA_T0DbVWAG3-JuH9MhM7G50IdeJ62IT5rOwqFTVF",
     webhookAplicarAdv: "https://discord.com/api/webhooks/1514985416728776724/RSBI-yBza7Z-FlC475lLXMHBwv_JMDwaS54eNx_qyZtFoto2YMaylrmM8-cKH_xT4b2_",
     webhookConfirmarAdv: "https://discord.com/api/webhooks/1514986296379183124/BkPLp4Lsjs7WDTRIoa05Avb4Qruua3rKm7nW0B7kojqpna84nXifYQq2mcEOOdzqWg9L",
-    webhookSolicitarCursos: "https://discord.com/api/webhooks/1516051951954038815/yZSDzdly5gFydIifV4iQ2H__Zfr1GdEUlGy1zNNVy2XDoEopCW-fDI9NN-rAaEHOStWl",
-    webhookPagamentoCursos: "https://discord.com/api/webhooks/1516052149207830670/_7NAsCeGwhQHj0MyXNhATpKQ_mi4qqtPDoDiDDda1yYsnQXon2yLcV3bJ_cLMrwSfOa7",
-    webhookAprovacaoCursos: "https://discord.com/api/webhooks/1516052366821163028/aC-BpI63tujf1f9fJZZyIAWAA0rnVK40VshyUVvqtNbO-oda5zKJQkIl1qMXTfr2xoGo",
-    webhookCertificadosCursos: "https://discord.com/api/webhooks/1516053416265388194/rgH5gumCh8MowKt6tDXVt1cNvsi_ZAInrOfkSUWy0KJKNvSmjOMzQOV_R_7QkykJQid-",
+    webhookSolicitarCursos: "https://discord.com/api/webhooks/1556673658448125973/1LSxMT4D8mNZZejA7VsKPfnu4fHbqDvxscc_CIW5Bd3ZBS5-BK-MPnjAMryYnmKmkmoi",
+    webhookPagamentoCursos: "https://discord.com/api/webhooks/1556673933468508307/xTlfRe1u4bk7_h2qJ1JodYaPGtesGPJRl83Qup92j1PV5emUF5byBUd5KFVT4UyUrzNb",
+    webhookAprovacaoCursos: "https://discord.com/api/webhooks/1556674244111237190/ARET4UMHl_-VKadZ6adVK1E383R_XAL4gljTpg2Mfz5_gRJ08EF7QzmG__dPrO1Y7755",
+    webhookCertificadosCursos: "https://discord.com/api/webhooks/1556674474219143188/-KhN45gB7lA0eupmi26zWnnpY3O28nqDDrUr21v7W7QUGLepSXUUSbXXLyDwM7liLXU1",
     webhookRankingCursos: "https://discord.com/api/webhooks/1527016931687792884/r4-QqULe-q039tf8BOMhyJyPbsEZCFrPMAhi_r__8Euctr1dII2Lye1PwJxxUKlYF0rf"
 };
 
